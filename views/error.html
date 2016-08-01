@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+
+    <title>Whiteboard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/stylesheets/utils.css">
+  </head>
+
+
+  <body>
+    <p class="lead">Some shit went wrong</p>
+    <button type="button" class="btn btn-primary" id="js-go-home">Go home (you're drunk)</button>
+
+    <script>
+
+      document.getElementById('js-go-home').addEventListener('click', function() {
+        window.location.href = '/';
+      });
+
+    </script>
+  </body>
+</html>

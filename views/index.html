@@ -6,12 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
 
     <title>Whiteboard</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <link rel="stylesheet" href="/stylesheets/utils.css">
   </head>
 
+
   <body>
-    <div>
-      Main Page
+    <div class="jumbotron">
+      <h1 class="text-center">Whiteboard</h1>
+      <div class="flex justify-center">
+        <button type="button" class="btn btn-success btn-lg" id="js-create-new">Create</button>
+        <button type="button" class="btn btn-success btn-lg" id="js-join-existing">Join Existing</button>
+      </div>
     </div>
 
+    <script>
+      var createButton = document.getElementById('js-create-new');
+      var joinButton = document.getElementById('js-join-existing');
+
+      createButton.addEventListener('click', function() {
+        window.location.href = '/whiteboard/create';
+      });
+
+      joinButton.addEventListener('click', function() {
+        window.location.href = '/whiteboard/join';
+      });
+    </script>
   </body>
 </html>
