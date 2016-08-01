@@ -10,17 +10,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
   console.log(splatter)
 
-  var colorMap = [
-    '#ec8168',
-    '#f2cc72',
-    '#f5ef95',
-    '#b9f595',
-    '#95d6f5',
-    '#d7b0f2',
-    '#b8b8b8',
-    '#151515',
-    '#ffffff',
-  ]
+  var colorMap = {
+    red: '#ec8168',
+    orange: '#f2cc72',
+    yellow: '#f5ef95',
+    green: '#b9f595',
+    blue: '#95d6f5',
+    purple: '#d7b0f2',
+    gray: '#b8b8b8',
+    black: '#151515',
+    white: '#ffffff',
+  }
 
   var sizeMap = [45, 36, 30, 25, 20, 15, 10]
 
@@ -111,7 +111,7 @@ document.addEventListener('DOMContentLoaded', function() {
   function addColorSelectorListener(color, index) {
     color.addEventListener('mousedown', function(e) {
       var previousColor = brushColor;
-      brushColor = colorMap[index];
+      brushColor = colorMap[color.classList[1]];
 
       if ((brushColor === '#151515' || previousColor === '#151515')
         && previousColor !== brushColor) {

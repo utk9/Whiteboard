@@ -53,12 +53,12 @@ router.get('/api/canvas/:name', function(req, res) {
 router.get('/:name', function(req, res) {
 	var name = req.params.name;
 	if (canvasMap.hasOwnProperty(name)) {
-		res.render('whiteBoard');
+		res.render('whiteboard');
 	} else {
 		res.status(404).render('error');
 	}
 
-	
+
 });
 
 
