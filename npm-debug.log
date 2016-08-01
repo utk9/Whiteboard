@@ -1,5 +1,5 @@
 0 info it worked if it ends with ok
-1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'run', 'start' ]
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'start' ]
 2 info using npm@3.8.6
 3 info using node@v5.11.0
 4 verbose run-script [ 'prestart', 'start', 'poststart' ]
@@ -25,7 +25,7 @@
 15 verbose pkgid Whiteboard@0.0.0
 16 verbose cwd /Users/utk/development/Whiteboard
 17 error Darwin 14.5.0
-18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "run" "start"
+18 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "start"
 19 error node v5.11.0
 20 error npm  v3.8.6
 21 error code ELIFECYCLE
