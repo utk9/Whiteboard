@@ -8,22 +8,21 @@
     <title>Whiteboard</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="/stylesheets/utils.css">
+    <link rel="stylesheet" href="/stylesheets/base.css">
     <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
   </head>
 
 
   <body>
     <h1>Create a new canvas</h1>
-    <div class="form-group has-error">
-      <input placeholder="Name" id="js-name" />
-      <button class="btn btn-primary" id="js-create">Create</button>
-      <span class="error js-error"></span>
-    </div>
+    <input placeholder="Name" id="js-name" />
+    <button class="btn btn-primary" id="js-create">Create</button>
+    <span class="error" id="js-error"></span>
 
     <script>
       var createButton = document.getElementById('js-create');
       var nameInput = document.getElementById('js-name');
-      var error = document.getElementById('js-error');
+      var errorSpan = document.getElementById('js-error');
 
       createButton.addEventListener('click', function() {
         // Validate name input
@@ -33,14 +32,13 @@
           axios.post('/api/canvas', {
             name: name
           }).then(function(response) {
-            console.log(response)
             window.location.href = `/${name}`;
           }).catch(function(error) {
-            console.log(error)
-            error.innerHTML = JSON.parse(error).reason;
+            errorSpan.innerHTML = error.response.data.reason
+
           });
         } else {
-          error.innerHTML = 'Please enter a name.';
+          errorSpan.innerHTML = 'Please enter a name.';
         }
       });
     </script>
