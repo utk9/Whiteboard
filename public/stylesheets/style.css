@@ -84,10 +84,6 @@
   cursor: pointer;
 }
 
-.color-box.selected {
-  opacity: 0.5;
-}
-
 .color-box.red {
   background-color: #ec8168;
 }
