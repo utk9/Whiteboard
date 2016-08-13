@@ -37,9 +37,9 @@ document.addEventListener('DOMContentLoaded', function() {
   var drawing = false;
 
   // Select the default tool, color and size
-  var selectedTool, selectedMarkerSize, markerColor, markerSize
+  var selectedToolElement, selectedMarkerSizeElement, markerColor, markerSize
 
-  var selectedTool = null;
+  selectTool(document.querySelector('.marker'))
   selectMarkerSize(document.querySelector('.size-circle.size-5'))
   selectColor(document.querySelector('.color-box.gray'))
 
@@ -96,19 +96,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function addToolSelectorListener(tool) {
     tool.addEventListener('mousedown', function() {
-
-      var newTool
-      if (tool !== selectedTool) {
-        newTool = toggleTool(tool);
-        if (selectedTool) {
-          toggleTool(selectedTool);
-        }
-        selectedTool = newTool;
-      } else {
-        toggleTool(tool);
-        selectedTool = null;
-      }
+      selectTool(tool)
     })
+  }
+
+  function selectTool(tool) {
+    var newTool
+    if (tool !== selectedToolElement) {
+      newTool = toggleTool(tool);
+      if (selectedToolElement) {
+        toggleTool(selectedToolElement);
+      }
+      selectedToolElement = newTool;
+    }
   }
 
   function addColorPaletteListener(splatter) {
@@ -149,10 +149,10 @@ document.addEventListener('DOMContentLoaded', function() {
     markerSize = sizeMap[size.classList[1].replace('size-', '')];
 
     size.classList.toggle('selected')
-    if (selectedMarkerSize) {
-      selectedMarkerSize.classList.toggle('selected')
+    if (selectedMarkerSizeElement) {
+      selectedMarkerSizeElement.classList.toggle('selected')
     }
-    selectedMarkerSize = size;
+    selectedMarkerSizeElement = size;
   }
 
   function draw(type, e) {
