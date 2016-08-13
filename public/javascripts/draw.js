@@ -19,7 +19,6 @@ document.addEventListener('DOMContentLoaded', function() {
   var toolList = document.querySelector('.toolList');
 
   var splatter = document.querySelector('.splatter');
-  var splatterList = document.querySelector('.splatterList');
   var colorPalette = document.querySelector('.color-palette');
 
   var size = document.querySelector('.size');
@@ -56,7 +55,7 @@ document.addEventListener('DOMContentLoaded', function() {
   sizes.forEach(addSizeSelectorListener);
 
   // Adds listener to open palettes
-  var splatters = Array.prototype.slice.call(splatterList.children);
+  var splatters = [document.querySelector('.splatter'), document.querySelector('.splatter.no-display')]
   splatters.forEach(addColorPaletteListener);
 
   size.addEventListener('mousedown', function(e) {
