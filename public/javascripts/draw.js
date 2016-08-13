@@ -22,7 +22,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var colorPalette = document.querySelector('.color-palette');
 
   var size = document.querySelector('.size');
-  var sizePalette = document.querySelector('.size-palette');
+  var markerSizePalette = document.querySelector('.marker-size-palette');
 
 
   // Initialize the canvas and draw settings
@@ -31,17 +31,17 @@ document.addEventListener('DOMContentLoaded', function() {
   canvas.height = board.offsetHeight;
 
   var ctx = canvas.getContext('2d');
-  var brushWidth = sizeMap[5];
+  var markerWidth = sizeMap[5];
   var prevPos = { x: 0, y: 0 }
   var curPos = { x: 0, y: 0 }
 
   var drawing = false;
 
   // Select the default tool, color and size
-  var selectedTool, brushColor, brushWidth
+  var selectedTool, markerColor, markerWidth
 
   var selectedTool = null;
-  var selectedSize = document.querySelector('.size-circle.size-5');
+  var selectedMarkerSize = document.querySelector('.size-circle.size-5');
   selectColor(document.querySelector('.color-box.gray'))
 
   // Adds listeners to select the tool, color, size etc.
@@ -51,7 +51,7 @@ document.addEventListener('DOMContentLoaded', function() {
   var colors = Array.prototype.slice.call(colorPalette.children);
   colors.forEach(addColorSelectorListener);
 
-  var sizes = Array.prototype.slice.call(sizePalette.children);
+  var sizes = Array.prototype.slice.call(markerSizePalette.children);
   sizes.forEach(addSizeSelectorListener);
 
   // Adds listener to open palettes
@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
   splatters.forEach(addColorPaletteListener);
 
   size.addEventListener('mousedown', function(e) {
-    sizePalette.classList.toggle('open-palette');
+    markerSizePalette.classList.toggle('open-palette');
   });
 
   // Drawing functionality
@@ -127,27 +127,27 @@ document.addEventListener('DOMContentLoaded', function() {
   }
 
   function selectColor(color) {
-    var previousColor = brushColor;
-    brushColor = colorMap[color.classList[1]];
+    var previousColor = markerColor;
+    markerColor = colorMap[color.classList[1]];
 
     // Toggle the border around the black splatter
-    if ((brushColor === '#151515' || previousColor === '#151515')
-      && previousColor !== brushColor) {
+    if ((markerColor === '#151515' || previousColor === '#151515')
+      && previousColor !== markerColor) {
       splatter = toggleTool(splatter);
     }
 
-    splatter.setAttribute("style", `background-color: ${brushColor}`)
+    splatter.setAttribute("style", `background-color: ${markerColor}`)
   }
 
   function addSizeSelectorListener(size, index) {
     size.addEventListener('mousedown', function(e) {
-      brushWidth = sizeMap[size.classList[1].replace('size-', '')];
+      markerWidth = sizeMap[size.classList[1].replace('size-', '')];
 
-      sizePalette.classList.toggle('open-palette')
+      markerSizePalette.classList.toggle('open-palette')
 
       size.classList.toggle('selected')
-      selectedSize.classList.toggle('selected')
-      selectedSize = size;
+      selectedMarkerSize.classList.toggle('selected')
+      selectedMarkerSize = size;
     });
   }
 
@@ -158,8 +158,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
       // Draw the first dot
       ctx.beginPath();
-      ctx.fillStyle = brushColor;
-      ctx.arc(curPos.x, curPos.y, brushWidth/2, 0, 2 * Math.PI);
+      ctx.fillStyle = markerColor;
+      ctx.arc(curPos.x, curPos.y, markerWidth/2, 0, 2 * Math.PI);
       ctx.fill();
       ctx.closePath();
 
@@ -190,8 +190,8 @@ document.addEventListener('DOMContentLoaded', function() {
   function stroke() {
     ctx.beginPath();
 
-    ctx.lineWidth = brushWidth;
-    ctx.strokeStyle = brushColor;
+    ctx.lineWidth = markerWidth;
+    ctx.strokeStyle = markerColor;
 
     ctx.lineJoin = ctx.lineCap = 'round';
     ctx.moveTo(prevPos.x, prevPos.y);
