@@ -28,18 +28,22 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize the canvas and draw settings
   setSize();
+  canvas.width = board.offsetWidth;
+  canvas.height = board.offsetHeight;
 
   var ctx = canvas.getContext('2d');
   var brushWidth = sizeMap[5];
-  var brushColor = colorMap['gray'];
   var prevPos = { x: 0, y: 0 }
   var curPos = { x: 0, y: 0 }
 
   var drawing = false;
 
   // Select the default tool, color and size
+  var selectedTool, brushColor, brushWidth
+
   var selectedTool = null;
   var selectedSize = document.querySelector('.size-circle.size-5');
+  selectColor(document.querySelector('.color-box.gray'))
 
   // Adds listeners to select the tool, color, size etc.
   var tools = Array.prototype.slice.call(toolList.children);
