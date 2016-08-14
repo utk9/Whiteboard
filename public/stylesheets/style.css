@@ -1,34 +1,19 @@
 .board {
-  height: 100%;
-  width: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   background-color: white;
   box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.3);
 }
 
 .tool-icon {
   margin: 3px 0px;
-  width: 60px;
-  height: 60px;
+  width: 45px;
   cursor: pointer;
   background-color: white;
   transition: background-color 300ms;
-}
-
-.tool-icon:hover {
-  /*background-color: #6ed4ff;*/
-}
-
-.tool-icon.splatter {
-  width: 80px;
-  height: 80px;
-  margin: 10px 0px;
-  background-color: #b8b8b8;
-}
-
-.tool-icon.size {
-  width: 80px;
-  height: 80px;
-  margin-bottom: 20px;
 }
 
 .tool-icon.no-display {
@@ -52,40 +37,35 @@
 }
 
 .palette {
-  width: 100px;
-  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 90px;
   padding: 10px;
   background-color: black;
-  z-index: 2;
   box-sizing: border-box;
 }
 
 .color-palette {
-  width: 500px;
-  height: 90px;
   position: absolute;
-  top: 10px;
-  left: -450px;
+  top: 4px;
+  left: -320px;
+  padding: 12px;
   background-color: black;
-  padding: 0 10px;
   border-radius: 10px;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
-  z-index: 1;
   transition: left 1000ms;
 }
 
 .color-box {
   display: inline;
-  width: 40px;
+  width: 25px;
+  height: 25px;
   margin: 5px;
-  height: 40px;
   border: 2px solid rgba(255, 255, 255, 0.5);
   border-radius: 10px;
   cursor: pointer;
-}
-
-.color-box.selected {
-  opacity: 0.5;
 }
 
 .color-box.red {
@@ -125,17 +105,20 @@
 }
 
 .size-palette {
-  width: 330px;
-  height: 90px;
   position: absolute;
-  top: 110px;
-  left: -260px;
+  left: -270px;
   background-color: black;
-  padding: 0 10px;
+  padding: 12px;
   border-radius: 10px;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
-  z-index: 1;
   transition: left 1000ms;
+}
+
+.marker-size-palette {
+  top: 105px;
+}
+.eraser-size-palette {
+  top: 156px;
 }
 
 .size-circle {
@@ -179,14 +162,5 @@
 }
 
 .open-palette {
-  left: 100px;
+  left: 90px;
 }
-
-/*.chat {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  right: 0;
-  width: 400px;
-  border: 2px solid black;
-}*/
