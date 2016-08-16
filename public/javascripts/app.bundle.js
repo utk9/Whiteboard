@@ -205,7 +205,7 @@
 	var toolAttributes = __webpack_require__(3).attributes;
 	var marker = toolAttributes.marker
 
-	var drawData = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./drawData.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
+	var canvasData = __webpack_require__(4).canvasData;
 
 	var drawing = false;
 	var prevPos = { x: 0, y: 0 }
@@ -213,7 +213,7 @@
 	var ctx = canvas.getContext('2d');
 
 	var socket = io();
-	socket.emit("new_user", drawData.canvasData);
+	socket.emit("new_user", canvasData);
 
 	socket.on("canvas_redraw", function (canvas) {
 	  console.log(canvas);
@@ -269,7 +269,7 @@
 	  ctx.moveTo(prevPos.x, prevPos.y);
 	  ctx.lineTo(curPos.x, curPos.y);
 
-	  socket.emit("new_stroke", [prevPos, curPos]);
+	  socket.emit("new_stroke", {canvasName: canvasData.name, points: [prevPos, curPos]});
 
 	  ctx.stroke();
 	  ctx.closePath();
@@ -321,6 +321,18 @@
 	  name: '',
 	  element: null,
 	};
+
+
+/***/ },
+/* 4 */
+/***/ function(module, exports) {
+
+	module.exports.canvasData = {
+	  name: '',
+	  width: 0,
+	  height: 0,
+	  strokes: [],
+	}
 
 
 /***/ }
