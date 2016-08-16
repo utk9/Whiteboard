@@ -1,12 +1,13 @@
-ToolAttributes = {
-	_name: "John",
-	getName: function () {
-		return this._name;
-	},
-	setName: function (name) {
-		this._name = name;
-	}
-	
+module.exports.attributes = {
+  marker: {
+    color: '',
+    size: 0,
+  },
+  eraser: {
+    size: 0,
+  },
 };
-
-module.exports = ToolAttributes;
+module.exports.selectedTool = {
+  name: '',
+  element: null,
+};
