@@ -57,16 +57,12 @@ app.use(function(err, req, res, next) {
 
 io.on("connection", function(socket){
   socket.on("new_user", function (canvasData) {
-    console.log("new user event");
-    console.log(canvasData);
-    console.log(canvasMap);
     socket.emit("canvas_redraw", canvasMap[canvasData.name]);
   });
 
   socket.on("new_stroke", function (data) {
     canvasMap[data.canvasName].strokes.push(data.points);
-    console.log("new stroke event");
-    socket.boradcast.emit ("canvas_update", data.points);
+    socket.broadcast.emit ("canvas_update", data.points);
   });
 });
 

@@ -69,8 +69,6 @@
 	var canvasName = url.substring(url.lastIndexOf('/') + 1)
 	canvasData.name = canvasName
 
-	console.log(canvasData.name)
-
 	document.addEventListener('DOMContentLoaded', function() {
 
 	  // Initialize the canvas and draw settings
@@ -202,12 +200,10 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var canvas = __webpack_require__(2).canvas;
-
-	var toolAttributes = __webpack_require__(3).attributes;
-
+	var toolAttributes = __webpack_require__(4).attributes;
 	var marker = toolAttributes.marker
 
-	var canvasData = __webpack_require__(4).canvasData;
+	var canvasData = __webpack_require__(5).canvasData;
 
 	var drawing = false;
 	var prevPos = { x: 0, y: 0 }
@@ -368,7 +364,7 @@
 
 
 /***/ },
-
+/* 5 */
 /***/ function(module, exports) {
 
 	module.exports.canvasData = {
