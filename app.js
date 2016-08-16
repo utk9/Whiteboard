@@ -11,6 +11,9 @@ var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
+var Canvas = require('../data/canvasData.js').Canvas;
+var canvasMap = require('../data/canvasData.js').canvasMap;
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
@@ -53,7 +56,16 @@ app.use(function(err, req, res, next) {
 });
 
 io.on("connection", function(socket){
-  
+  socket.on("new_user", function (canvasData) {
+    console.log("new user event");
+    socket.emit("canvas_redraw", canvasMap[canvasData.name]);
+  });
+
+  socket.on("new_stroke", function (points) {
+    canvasMap.strokes.push(points);
+    console.log("new stroke event");
+    socket.boradcast.emit ("canvas_update", points);
+  });
 });
 
 module.exports = {

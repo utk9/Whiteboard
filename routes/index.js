@@ -25,7 +25,7 @@ router.post('/api/canvas', function (req, res) {
 			reason: "This name already exists."
 		});
 	} else {
-		canvasMap[name] = new Canvas(name);
+		canvasMap[name] = new Canvas(name, 900, 700, []);
 		res.json({
 			success: true,
 			name: name

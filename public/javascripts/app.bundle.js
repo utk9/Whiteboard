@@ -202,13 +202,26 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var canvas = __webpack_require__(2).canvas;
-	var toolAttributes = __webpack_require__(3).attributes
+	var toolAttributes = __webpack_require__(3).attributes;
 	var marker = toolAttributes.marker
+
+	var drawData = __webpack_require__(!(function webpackMissingModule() { var e = new Error("Cannot find module \"./drawData.js\""); e.code = 'MODULE_NOT_FOUND'; throw e; }()));
 
 	var drawing = false;
 	var prevPos = { x: 0, y: 0 }
 	var curPos = { x: 0, y: 0 }
 	var ctx = canvas.getContext('2d');
+
+	var socket = io();
+	socket.emit("new_user", drawData.canvasData);
+
+	socket.on("canvas_redraw", function (canvas) {
+	  console.log(canvas);
+	});
+
+	socket.on("canvas_update", function(points) {
+	  console.log(points);
+	});
 
 	var draw = function(type, e) {
 
@@ -255,6 +268,9 @@
 	  ctx.lineJoin = ctx.lineCap = 'round';
 	  ctx.moveTo(prevPos.x, prevPos.y);
 	  ctx.lineTo(curPos.x, curPos.y);
+
+	  socket.emit("new_stroke", [prevPos, curPos]);
+
 	  ctx.stroke();
 	  ctx.closePath();
 	}

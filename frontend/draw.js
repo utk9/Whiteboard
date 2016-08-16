@@ -1,11 +1,24 @@
 var canvas = require('./domNodes').canvas;
-var toolAttributes = require('./toolAttributes').attributes
+var toolAttributes = require('./toolAttributes').attributes;
 var marker = toolAttributes.marker
+
+var drawData = require('./drawData.js');
 
 var drawing = false;
 var prevPos = { x: 0, y: 0 }
 var curPos = { x: 0, y: 0 }
 var ctx = canvas.getContext('2d');
+
+var socket = io();
+socket.emit("new_user", drawData.canvasData);
+
+socket.on("canvas_redraw", function (canvas) {
+  console.log(canvas);
+});
+
+socket.on("canvas_update", function(points) {
+  console.log(points);
+});
 
 var draw = function(type, e) {
 
@@ -52,6 +65,9 @@ function stroke() {
   ctx.lineJoin = ctx.lineCap = 'round';
   ctx.moveTo(prevPos.x, prevPos.y);
   ctx.lineTo(curPos.x, curPos.y);
+
+  socket.emit("new_stroke", [prevPos, curPos]);
+
   ctx.stroke();
   ctx.closePath();
 }
