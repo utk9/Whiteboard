@@ -17,6 +17,12 @@ var markerSizePalette = require('./domNodes.js').markerSizePalette
 var colorMap = require('./maps.js').colorMap
 var sizeMap = require('./maps.js').sizeMap
 
+// Populate canvas with current draw data
+var canvasData = require('./canvasData').canvasData
+var url = window.location.href
+var canvasName = url.substring(url.lastIndexOf('/') + 1)
+canvasData.name = canvasName
+
 document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize the canvas and draw settings
