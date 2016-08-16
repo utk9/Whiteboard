@@ -2,6 +2,9 @@ var draw = require('./draw.js')
 
 var toolAttributes = require('./toolAttributes.js').attributes
 var marker = toolAttributes.marker
+var eraser = toolAttributes.eraser
+
+var selectedTool = require('./toolAttributes.js').selectedTool
 
 var canvas = require('./domNodes.js').canvas
 var board = require('./domNodes.js').board
@@ -11,20 +14,16 @@ var colorPalette = require('./domNodes.js').colorPalette
 var size = require('./domNodes.js').size
 var markerSizePalette = require('./domNodes.js').markerSizePalette
 
-document.addEventListener('DOMContentLoaded', function() {
+var colorMap = require('./maps.js').colorMap
+var sizeMap = require('./maps.js').sizeMap
 
-  var colorMap = {
-    red: '#ec8168',
-    orange: '#f2cc72',
-    yellow: '#f5ef95',
-    green: '#b9f595',
-    blue: '#95d6f5',
-    purple: '#d7b0f2',
-    gray: '#b8b8b8',
-    black: '#151515',
-    white: '#ffffff',
-  }
-  var sizeMap = [45, 36, 30, 25, 20, 15, 10]
+// Populate canvas with current draw data
+var canvasData = require('./canvasData').canvasData
+var url = window.location.href
+var canvasName = url.substring(url.lastIndexOf('/') + 1)
+canvasData.name = canvasName
+
+document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize the canvas and draw settings
   setSize();
@@ -32,8 +31,6 @@ document.addEventListener('DOMContentLoaded', function() {
   canvas.height = board.offsetHeight;
 
   // Select the default tool, color and size
-  var selectedToolElement, selectedMarkerSizeElement, markerColor, markerSize
-
   selectTool(document.querySelector('.marker'))
   selectMarkerSize(document.querySelector('.size-circle.size-5'))
   selectColor(document.querySelector('.color-box.gray'))
@@ -97,12 +94,13 @@ document.addEventListener('DOMContentLoaded', function() {
 
   function selectTool(tool) {
     var newTool
-    if (tool !== selectedToolElement) {
+    if (tool !== selectedTool.element) {
       newTool = toggleTool(tool);
-      if (selectedToolElement) {
-        toggleTool(selectedToolElement);
+      if (selectedTool.element) {
+        toggleTool(selectedTool.element);
       }
-      selectedToolElement = newTool;
+      selectedTool.element = newTool;
+      selectedTool.name = newTool.classList[1]
     }
   }
 
@@ -143,9 +141,9 @@ document.addEventListener('DOMContentLoaded', function() {
   function selectMarkerSize(size) {
     marker.size = sizeMap[size.classList[1].replace('size-', '')];
     size.classList.toggle('selected')
-    if (selectedMarkerSizeElement) {
-      selectedMarkerSizeElement.classList.toggle('selected')
+    if (marker.sizeElement) {
+      marker.sizeElement.classList.toggle('selected')
     }
-    selectedMarkerSizeElement = size;
+    marker.sizeElement = size;
   }
 });
