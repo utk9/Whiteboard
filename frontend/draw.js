@@ -1,4 +1,5 @@
 var canvas = require('./domNodes').canvas;
+var loadingOverlay = require('./domNodes').loadingOverlay;
 var toolAttributes = require('./toolAttributes').attributes;
 var selectedTool = require('./toolAttributes').selectedTool;
 var marker = toolAttributes.marker;
@@ -16,6 +17,7 @@ socket.emit("new_user", canvasData);
 
 socket.on("canvas_redraw", function (canvas) {
   console.log(canvas);
+  loadingOverlay.classList.add("no-display");
 });
 
 socket.on("canvas_update", function(points) {

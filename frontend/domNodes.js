@@ -14,6 +14,8 @@ var size = document.querySelector('.size');
 var markerSizePalette = document.querySelector('.marker-size-palette')
 var eraserSizePalette = document.querySelector('.eraser-size-palette')
 
+var loadingOverlay = document.querySelector('.loading-overlay')
+
 var getPaletteElement = function (name) {
   return document.querySelector(`.${name}-palette`)
 }
@@ -50,4 +52,5 @@ module.exports = {
   getPaletteElement: getPaletteElement,
   markerSizePalette: markerSizePalette,
   eraserSizePalette: eraserSizePalette,
+  loadingOverlay: loadingOverlay
 }

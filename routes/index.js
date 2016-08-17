@@ -5,11 +5,11 @@ var canvasMap = require('../data/canvasData.js').canvasMap;
 
 //Routes ======================================================
 router.get('/', function(req, res, next) {
-  res.render('whiteboard');
+  res.render('index');
 });
 
 router.get('/create', function(req, res) {
-	res.render('create');q
+	res.render('create');
 });
 
 router.get('/join', function(req, res) {

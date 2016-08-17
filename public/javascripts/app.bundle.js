@@ -52,7 +52,6 @@
 	var eraser = toolAttributes.eraser
 
 	var selectedTool = __webpack_require__(4).selectedTool
-	var openPalette = __webpack_require__(4).openPalette
 
 	// Dom nodes
 	var canvas = __webpack_require__(2).canvas
@@ -146,6 +145,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var canvas = __webpack_require__(2).canvas;
+	var loadingOverlay = __webpack_require__(2).loadingOverlay;
 	var toolAttributes = __webpack_require__(4).attributes;
 	var selectedTool = __webpack_require__(4).selectedTool;
 	var marker = toolAttributes.marker;
@@ -163,6 +163,7 @@
 
 	socket.on("canvas_redraw", function (canvas) {
 	  console.log(canvas);
+	  loadingOverlay.classList.add("no-display");
 	});
 
 	socket.on("canvas_update", function(points) {
@@ -249,6 +250,8 @@
 	var markerSizePalette = document.querySelector('.marker-size-palette')
 	var eraserSizePalette = document.querySelector('.eraser-size-palette')
 
+	var loadingOverlay = document.querySelector('.loading-overlay')
+
 	var getPaletteElement = function (name) {
 	  return document.querySelector(`.${name}-palette`)
 	}
@@ -285,6 +288,7 @@
 	  getPaletteElement: getPaletteElement,
 	  markerSizePalette: markerSizePalette,
 	  eraserSizePalette: eraserSizePalette,
+	  loadingOverlay: loadingOverlay
 	}
 
 
@@ -470,8 +474,6 @@
 	  openedPalette.name = name
 	  openedPalette.element = getPaletteElement(name)
 	  openedPalette.element.classList.toggle('open-palette')
-
-	  console.log('openedPalette:', openedPalette)
 	}
 
 	var closePalette = function () {
@@ -492,7 +494,6 @@
 	  addSizeSelectorListener: addSizeSelectorListener,
 	  addSizePaletteListener: addSizePaletteListener,
 	  selectMarkerSize: selectMarkerSize,
-	  openPalette: openPalette,
 	}
 
 
