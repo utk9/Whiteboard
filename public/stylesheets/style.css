@@ -164,3 +164,24 @@
 .open-palette {
   left: 90px;
 }
+
+.loading-overlay {
+  background-color: rgba(0, 0, 0, 0.3);
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.loading-icon {
+  background-color: black;
+  padding: 0px 20px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+.loading-icon h3 {
+  color: white;
+}
