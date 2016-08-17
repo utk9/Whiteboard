@@ -16,7 +16,7 @@
   transition: background-color 300ms;
 }
 
-.tool-icon.no-display {
+.no-display {
   display: none;
 }
 
