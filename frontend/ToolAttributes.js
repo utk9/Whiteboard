@@ -15,6 +15,7 @@ module.exports.attributes = {
 module.exports.selectedTool = {
   name: '',
   element: null,
+  attributes: {},
 };
 module.exports.openedPalette = {
   name: '',

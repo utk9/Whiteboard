@@ -1,9 +1,6 @@
 var canvas = require('./domNodes').canvas;
 var loadingOverlay = require('./domNodes').loadingOverlay;
-var toolAttributes = require('./toolAttributes').attributes;
 var selectedTool = require('./toolAttributes').selectedTool;
-var marker = toolAttributes.marker;
-var eraser = toolAttributes.eraser;
 
 var canvasData = require('./canvasData.js').canvasData;
 
@@ -31,8 +28,8 @@ var draw = function(type, e) {
 
     // Draw the first dot
     ctx.beginPath();
-    ctx.fillStyle = marker.color;
-    ctx.arc(curPos.x, curPos.y, marker.size/2, 0, 2 * Math.PI);
+    ctx.fillStyle = selectedTool.attributes.color;
+    ctx.arc(curPos.x, curPos.y, selectedTool.attributes.size/2, 0, 2 * Math.PI);
     ctx.fill();
     ctx.closePath();
 
@@ -63,13 +60,8 @@ function setCurrentPos(e) {
 function stroke() {
   ctx.beginPath();
 
-  if (selectedTool.name === 'marker') {
-    ctx.lineWidth = marker.size;
-    ctx.strokeStyle = marker.color;
-  } else if (selectedTool.name === 'eraser') {
-    ctx.lineWidth = eraser.size;
-    ctx.strokeStyle = eraser.color;
-  }
+  ctx.lineWidth = selectedTool.attributes.size;
+  ctx.strokeStyle = selectedTool.attributes.color;
 
   ctx.lineJoin = ctx.lineCap = 'round';
   ctx.moveTo(prevPos.x, prevPos.y);

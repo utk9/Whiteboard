@@ -28,11 +28,11 @@ var getPaletteElement = require('./domNodes.js').getPaletteElement
 var selectMarkerSize = require('./tools.js').selectMarkerSize
 var selectTool = require('./tools.js').selectTool
 var selectColor = require('./tools.js').selectColor
-var addToolSelectorListener = require('./tools.js').addToolSelectorListener
-var addColorSelectorListener = require('./tools.js').addColorSelectorListener
-var addSizeSelectorListener = require('./tools.js').addSizeSelectorListener
+var addToolPaletteListener = require('./tools.js').addToolPaletteListener
 var addColorPaletteListener = require('./tools.js').addColorPaletteListener
 var addSizePaletteListener = require('./tools.js').addSizePaletteListener
+var addColorToolListener = require('./tools.js').addColorToolListener
+var addSizeToolListener = require('./tools.js').addSizeToolListener
 
 // Populate canvas with current draw data
 var canvasData = require('./canvasData').canvasData
@@ -55,19 +55,19 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Adds listeners to select the tool, color, size etc.
   var tools = Array.prototype.slice.call(toolList.children);
-  tools.forEach(addToolSelectorListener);
+  tools.forEach(addToolPaletteListener);
 
   var colors = Array.prototype.slice.call(colorPalette.children);
-  colors.forEach(addColorSelectorListener);
+  colors.forEach(addColorPaletteListener);
 
   var markerSizes = Array.prototype.slice.call(markerSizePalette.children);
-  markerSizes.forEach(addSizeSelectorListener);
+  markerSizes.forEach(addSizePaletteListener);
 
   // Adds listener to open palettes
-  addColorPaletteListener(splatter)
-  addColorPaletteListener(splatterOutline)
+  addColorToolListener(splatter)
+  addColorToolListener(splatterOutline)
 
-  addSizePaletteListener(size)
+  addSizeToolListener(size)
 
   // Drawing functionality
   canvas.addEventListener('mousemove', function (e) {
