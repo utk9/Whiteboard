@@ -62,7 +62,7 @@ io.on("connection", function(socket){
 
   socket.on("new_stroke", function (data) {
     canvasMap[data.canvasName].strokes.push(data.points);
-    socket.broadcast.emit ("canvas_update", data.points);
+    socket.broadcast.emit ("canvas_update", data);
   });
 });
 

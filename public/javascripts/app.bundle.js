@@ -166,8 +166,8 @@
 	  loadingOverlay.classList.add("no-display");
 	});
 
-	socket.on("canvas_update", function(points) {
-	  console.log(points);
+	socket.on("canvas_update", function(data) {
+	  console.log(data);
 	});
 
 	var draw = function(type, e) {
@@ -221,7 +221,13 @@
 	  ctx.moveTo(prevPos.x, prevPos.y);
 	  ctx.lineTo(curPos.x, curPos.y);
 
-	  socket.emit("new_stroke", {canvasName: canvasData.name, points: [prevPos, curPos]});
+	  debugger
+
+	  socket.emit("new_stroke", {
+	    toolAttribue: selectedTool.attributes,
+	    canvasName: canvasData.name, 
+	    points: [prevPos, curPos]
+	  });
 
 	  ctx.stroke();
 	  ctx.closePath();
