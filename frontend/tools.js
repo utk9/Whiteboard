@@ -32,7 +32,7 @@ var toggleTool = function (tool) {
   return toDisplay
 }
 
-var addToolSelectorListener = function (tool) {
+var addToolPaletteListener = function (tool) {
   tool.addEventListener('mousedown', function () {
     selectTool(tool)
   })
@@ -47,17 +47,18 @@ var selectTool = function (tool) {
     }
     selectedTool.element = newTool;
     selectedTool.name = newTool.classList[1]
+    selectedTool.attributes = toolAttributes[selectedTool.name]
   }
 }
 
-var addColorPaletteListener = function (splatter) {
+var addColorToolListener = function (splatter) {
   splatter.addEventListener('mousedown', function (e) {
     togglePalette('color')
   });
 }
 
 
-var addColorSelectorListener = function (color) {
+var addColorPaletteListener = function (color) {
   color.addEventListener('mousedown', function (e) {
     selectColor(color)
     togglePalette()
@@ -77,7 +78,7 @@ var selectColor = function (color) {
   splatter.setAttribute("style", `background-color: ${marker.color}`)
 }
 
-var addSizePaletteListener = function (size) {
+var addSizeToolListener = function (size) {
   size.addEventListener('mousedown', function (e) {
     if (selectedTool.name === 'marker') {
       togglePalette('marker-size')
@@ -87,7 +88,7 @@ var addSizePaletteListener = function (size) {
   })
 }
 
-var addSizeSelectorListener = function (size, index) {
+var addSizePaletteListener = function (size, index) {
   size.addEventListener('mousedown', function (e) {
     selectMarkerSize(size)
     togglePalette()
@@ -129,12 +130,12 @@ var closePalette = function () {
 
 module.exports = {
   toggleTool: toggleTool,
-  addToolSelectorListener: addToolSelectorListener,
+  addToolPaletteListener: addToolPaletteListener,
   selectTool: selectTool,
+  addColorToolListener: addColorToolListener,
   addColorPaletteListener: addColorPaletteListener,
-  addColorSelectorListener: addColorSelectorListener,
   selectColor: selectColor,
-  addSizeSelectorListener: addSizeSelectorListener,
   addSizePaletteListener: addSizePaletteListener,
+  addSizeToolListener: addSizeToolListener,
   selectMarkerSize: selectMarkerSize,
 }
