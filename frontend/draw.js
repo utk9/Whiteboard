@@ -13,12 +13,11 @@ var socket = io();
 socket.emit("new_user", canvasData);
 
 socket.on("canvas_redraw", function (canvas) {
-  console.log(canvas);
   loadingOverlay.classList.add("no-display");
 });
 
 socket.on("canvas_update", function(data) {
-  console.log(data);
+  update(data.points[0], data.points[1], data.toolAttributes)
 });
 
 var draw = function(type, e) {
@@ -68,10 +67,24 @@ function stroke() {
   ctx.lineTo(curPos.x, curPos.y);
 
   socket.emit("new_stroke", {
-    toolAttribue: selectedTool.attributes,
+    toolAttributes: selectedTool.attributes,
     canvasName: canvasData.name,
     points: [prevPos, curPos]
   });
+
+  ctx.stroke();
+  ctx.closePath();
+}
+
+function update(prevPos, curPos, toolAttributes) {
+  ctx.beginPath();
+
+  ctx.lineWidth = toolAttributes.size;
+  ctx.strokeStyle = toolAttributes.color;
+
+  ctx.lineJoin = ctx.lineCap = 'round';
+  ctx.moveTo(prevPos.x, prevPos.y);
+  ctx.lineTo(curPos.x, curPos.y);
 
   ctx.stroke();
   ctx.closePath();
