@@ -74,11 +74,11 @@
 	var selectMarkerSize = __webpack_require__(6).selectMarkerSize
 	var selectTool = __webpack_require__(6).selectTool
 	var selectColor = __webpack_require__(6).selectColor
-	var addToolSelectorListener = __webpack_require__(6).addToolSelectorListener
-	var addColorSelectorListener = __webpack_require__(6).addColorSelectorListener
-	var addSizeSelectorListener = __webpack_require__(6).addSizeSelectorListener
+	var addToolPaletteListener = __webpack_require__(6).addToolPaletteListener
 	var addColorPaletteListener = __webpack_require__(6).addColorPaletteListener
 	var addSizePaletteListener = __webpack_require__(6).addSizePaletteListener
+	var addColorToolListener = __webpack_require__(6).addColorToolListener
+	var addSizeToolListener = __webpack_require__(6).addSizeToolListener
 
 	// Populate canvas with current draw data
 	var canvasData = __webpack_require__(5).canvasData
@@ -101,19 +101,19 @@
 
 	  // Adds listeners to select the tool, color, size etc.
 	  var tools = Array.prototype.slice.call(toolList.children);
-	  tools.forEach(addToolSelectorListener);
+	  tools.forEach(addToolPaletteListener);
 
 	  var colors = Array.prototype.slice.call(colorPalette.children);
-	  colors.forEach(addColorSelectorListener);
+	  colors.forEach(addColorPaletteListener);
 
 	  var markerSizes = Array.prototype.slice.call(markerSizePalette.children);
-	  markerSizes.forEach(addSizeSelectorListener);
+	  markerSizes.forEach(addSizePaletteListener);
 
 	  // Adds listener to open palettes
-	  addColorPaletteListener(splatter)
-	  addColorPaletteListener(splatterOutline)
+	  addColorToolListener(splatter)
+	  addColorToolListener(splatterOutline)
 
-	  addSizePaletteListener(size)
+	  addSizeToolListener(size)
 
 	  // Drawing functionality
 	  canvas.addEventListener('mousemove', function (e) {
@@ -146,10 +146,7 @@
 
 	var canvas = __webpack_require__(2).canvas;
 	var loadingOverlay = __webpack_require__(2).loadingOverlay;
-	var toolAttributes = __webpack_require__(4).attributes;
 	var selectedTool = __webpack_require__(4).selectedTool;
-	var marker = toolAttributes.marker;
-	var eraser = toolAttributes.eraser;
 
 	var canvasData = __webpack_require__(5).canvasData;
 
@@ -177,8 +174,8 @@
 
 	    // Draw the first dot
 	    ctx.beginPath();
-	    ctx.fillStyle = marker.color;
-	    ctx.arc(curPos.x, curPos.y, marker.size/2, 0, 2 * Math.PI);
+	    ctx.fillStyle = selectedTool.attributes.color;
+	    ctx.arc(curPos.x, curPos.y, selectedTool.attributes.size/2, 0, 2 * Math.PI);
 	    ctx.fill();
 	    ctx.closePath();
 
@@ -209,13 +206,8 @@
 	function stroke() {
 	  ctx.beginPath();
 
-	  if (selectedTool.name === 'marker') {
-	    ctx.lineWidth = marker.size;
-	    ctx.strokeStyle = marker.color;
-	  } else if (selectedTool.name === 'eraser') {
-	    ctx.lineWidth = eraser.size;
-	    ctx.strokeStyle = eraser.color;
-	  }
+	  ctx.lineWidth = selectedTool.attributes.size;
+	  ctx.strokeStyle = selectedTool.attributes.color;
 
 	  ctx.lineJoin = ctx.lineCap = 'round';
 	  ctx.moveTo(prevPos.x, prevPos.y);
@@ -225,7 +217,7 @@
 
 	  socket.emit("new_stroke", {
 	    toolAttribue: selectedTool.attributes,
-	    canvasName: canvasData.name, 
+	    canvasName: canvasData.name,
 	    points: [prevPos, curPos]
 	  });
 
@@ -338,6 +330,7 @@
 	module.exports.selectedTool = {
 	  name: '',
 	  element: null,
+	  attributes: {},
 	};
 	module.exports.openedPalette = {
 	  name: '',
@@ -395,7 +388,7 @@
 	  return toDisplay
 	}
 
-	var addToolSelectorListener = function (tool) {
+	var addToolPaletteListener = function (tool) {
 	  tool.addEventListener('mousedown', function () {
 	    selectTool(tool)
 	  })
@@ -410,17 +403,18 @@
 	    }
 	    selectedTool.element = newTool;
 	    selectedTool.name = newTool.classList[1]
+	    selectedTool.attributes = toolAttributes[selectedTool.name]
 	  }
 	}
 
-	var addColorPaletteListener = function (splatter) {
+	var addColorToolListener = function (splatter) {
 	  splatter.addEventListener('mousedown', function (e) {
 	    togglePalette('color')
 	  });
 	}
 
 
-	var addColorSelectorListener = function (color) {
+	var addColorPaletteListener = function (color) {
 	  color.addEventListener('mousedown', function (e) {
 	    selectColor(color)
 	    togglePalette()
@@ -440,7 +434,7 @@
 	  splatter.setAttribute("style", `background-color: ${marker.color}`)
 	}
 
-	var addSizePaletteListener = function (size) {
+	var addSizeToolListener = function (size) {
 	  size.addEventListener('mousedown', function (e) {
 	    if (selectedTool.name === 'marker') {
 	      togglePalette('marker-size')
@@ -450,7 +444,7 @@
 	  })
 	}
 
-	var addSizeSelectorListener = function (size, index) {
+	var addSizePaletteListener = function (size, index) {
 	  size.addEventListener('mousedown', function (e) {
 	    selectMarkerSize(size)
 	    togglePalette()
@@ -492,13 +486,13 @@
 
 	module.exports = {
 	  toggleTool: toggleTool,
-	  addToolSelectorListener: addToolSelectorListener,
+	  addToolPaletteListener: addToolPaletteListener,
 	  selectTool: selectTool,
+	  addColorToolListener: addColorToolListener,
 	  addColorPaletteListener: addColorPaletteListener,
-	  addColorSelectorListener: addColorSelectorListener,
 	  selectColor: selectColor,
-	  addSizeSelectorListener: addSizeSelectorListener,
 	  addSizePaletteListener: addSizePaletteListener,
+	  addSizeToolListener: addSizeToolListener,
 	  selectMarkerSize: selectMarkerSize,
 	}
 

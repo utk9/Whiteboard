@@ -67,8 +67,6 @@ function stroke() {
   ctx.moveTo(prevPos.x, prevPos.y);
   ctx.lineTo(curPos.x, curPos.y);
 
-  debugger
-
   socket.emit("new_stroke", {
     toolAttribue: selectedTool.attributes,
     canvasName: canvasData.name,
