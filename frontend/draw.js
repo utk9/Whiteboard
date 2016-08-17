@@ -1,6 +1,8 @@
 var canvas = require('./domNodes').canvas;
 var toolAttributes = require('./toolAttributes').attributes;
-var marker = toolAttributes.marker
+var selectedTool = require('./toolAttributes').selectedTool;
+var marker = toolAttributes.marker;
+var eraser = toolAttributes.eraser;
 
 var canvasData = require('./canvasData.js').canvasData;
 
@@ -59,8 +61,13 @@ function setCurrentPos(e) {
 function stroke() {
   ctx.beginPath();
 
-  ctx.lineWidth = marker.size;
-  ctx.strokeStyle = marker.color;
+  if (selectedTool.name === 'marker') {
+    ctx.lineWidth = marker.size;
+    ctx.strokeStyle = marker.color;
+  } else if (selectedTool.name === 'eraser') {
+    ctx.lineWidth = eraser.size;
+    ctx.strokeStyle = eraser.color;
+  }
 
   ctx.lineJoin = ctx.lineCap = 'round';
   ctx.moveTo(prevPos.x, prevPos.y);

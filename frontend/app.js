@@ -1,21 +1,38 @@
 var draw = require('./draw.js')
 
+// Tool attributes
 var toolAttributes = require('./toolAttributes.js').attributes
 var marker = toolAttributes.marker
 var eraser = toolAttributes.eraser
 
 var selectedTool = require('./toolAttributes.js').selectedTool
 
+// Dom nodes
 var canvas = require('./domNodes.js').canvas
 var board = require('./domNodes.js').board
 var toolList = require('./domNodes.js').toolList
+
 var splatter = require('./domNodes.js').splatter
+var splatterOutline = require('./domNodes.js').splatterOutline
 var colorPalette = require('./domNodes.js').colorPalette
+
 var size = require('./domNodes.js').size
 var markerSizePalette = require('./domNodes.js').markerSizePalette
+var eraserSizePalette = require('./domNodes.js').eraserSizePalette
 
-var colorMap = require('./maps.js').colorMap
-var sizeMap = require('./maps.js').sizeMap
+var getColorElement = require('./domNodes.js').getColorElement
+var getSizeElement = require('./domNodes.js').getSizeElement
+var getPaletteElement = require('./domNodes.js').getPaletteElement
+
+// Tools
+var selectMarkerSize = require('./tools.js').selectMarkerSize
+var selectTool = require('./tools.js').selectTool
+var selectColor = require('./tools.js').selectColor
+var addToolSelectorListener = require('./tools.js').addToolSelectorListener
+var addColorSelectorListener = require('./tools.js').addColorSelectorListener
+var addSizeSelectorListener = require('./tools.js').addSizeSelectorListener
+var addColorPaletteListener = require('./tools.js').addColorPaletteListener
+var addSizePaletteListener = require('./tools.js').addSizePaletteListener
 
 // Populate canvas with current draw data
 var canvasData = require('./canvasData').canvasData
@@ -32,8 +49,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Select the default tool, color and size
   selectTool(document.querySelector('.marker'))
-  selectMarkerSize(document.querySelector('.size-circle.size-5'))
-  selectColor(document.querySelector('.color-box.gray'))
+
+  selectMarkerSize(getSizeElement(5, 'marker'))
+  selectColor(getColorElement('gray'))
 
   // Adds listeners to select the tool, color, size etc.
   var tools = Array.prototype.slice.call(toolList.children);
@@ -46,12 +64,10 @@ document.addEventListener('DOMContentLoaded', function() {
   markerSizes.forEach(addSizeSelectorListener);
 
   // Adds listener to open palettes
-  var splatters = [document.querySelector('.splatter'), document.querySelector('.splatter.no-display')]
-  splatters.forEach(addColorPaletteListener);
+  addColorPaletteListener(splatter)
+  addColorPaletteListener(splatterOutline)
 
-  size.addEventListener('mousedown', function(e) {
-    markerSizePalette.classList.toggle('open-palette');
-  });
+  addSizePaletteListener(size)
 
   // Drawing functionality
   canvas.addEventListener('mousemove', function (e) {
@@ -71,79 +87,8 @@ document.addEventListener('DOMContentLoaded', function() {
   }, false);
 
 
-  function setSize() {
+  function setSize () {
     canvas.width = board.offsetWidth;
     canvas.height = board.offsetHeight;
-  }
-
-  function toggleTool(tool) {
-    // Display the version of the tool that is being hidden and
-    // hide the one that is displayed
-    var toDisplay = document.querySelector(`.${tool.classList[1]}.no-display`);
-    tool.classList.add('no-display');
-    toDisplay.classList.remove('no-display');
-
-    return toDisplay
-  }
-
-  function addToolSelectorListener(tool) {
-    tool.addEventListener('mousedown', function() {
-      selectTool(tool)
-    })
-  }
-
-  function selectTool(tool) {
-    var newTool
-    if (tool !== selectedTool.element) {
-      newTool = toggleTool(tool);
-      if (selectedTool.element) {
-        toggleTool(selectedTool.element);
-      }
-      selectedTool.element = newTool;
-      selectedTool.name = newTool.classList[1]
-    }
-  }
-
-  function addColorPaletteListener(splatter) {
-    splatter.addEventListener('mousedown', function(e) {
-      colorPalette.classList.toggle('open-palette');
-    });
-  }
-
-
-  function addColorSelectorListener(color) {
-    color.addEventListener('mousedown', function(e) {
-      selectColor(color)
-      colorPalette.classList.toggle('open-palette')
-    });
-  }
-
-  function selectColor(color) {
-    var previousColor = marker.color;
-    marker.color = colorMap[color.classList[1]];
-
-    // Toggle the border around the black splatter
-    if ((marker.color === '#151515' || previousColor === '#151515')
-      && previousColor !== marker.color) {
-      splatter = toggleTool(splatter);
-    }
-
-    splatter.setAttribute("style", `background-color: ${marker.color}`)
-  }
-
-  function addSizeSelectorListener(size, index) {
-    size.addEventListener('mousedown', function(e) {
-      selectMarkerSize(size)
-      markerSizePalette.classList.toggle('open-palette')
-    });
-  }
-
-  function selectMarkerSize(size) {
-    marker.size = sizeMap[size.classList[1].replace('size-', '')];
-    size.classList.toggle('selected')
-    if (marker.sizeElement) {
-      marker.sizeElement.classList.toggle('selected')
-    }
-    marker.sizeElement = size;
   }
 });

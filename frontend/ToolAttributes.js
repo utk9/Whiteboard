@@ -16,3 +16,7 @@ module.exports.selectedTool = {
   name: '',
   element: null,
 };
+module.exports.openedPalette = {
+  name: '',
+  element: null,
+}

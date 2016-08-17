@@ -5,7 +5,7 @@ var canvasMap = require('../data/canvasData.js').canvasMap;
 
 //Routes ======================================================
 router.get('/', function(req, res, next) {
-  res.render('index');
+  res.render('whiteboard');
 });
 
 router.get('/create', function(req, res) {
@@ -48,7 +48,7 @@ router.get('/api/canvas/:name', function(req, res) {
 		});
 	}
 
-	
+
 });
 
 //IO =========================================================
