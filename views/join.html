@@ -19,13 +19,13 @@
     <span class="error" id="js-error"></span>
 
     <script>
-      var joinButton = document.getElementById('js-join');
-      var nameInput = document.getElementById('js-name');
-      var errorSpan = document.getElementById('js-error');
+      let joinButton = document.getElementById('js-join');
+      let nameInput = document.getElementById('js-name');
+      let errorSpan = document.getElementById('js-error');
 
       joinButton.addEventListener('click', function() {
         // Validate name input
-        var name = nameInput.value
+        let name = nameInput.value
 
         if (name.trim() !== '') {
           axios.get(`/api/canvas/${name}`)

@@ -1,45 +1,45 @@
 // Tool attributes
-var toolAttributes = require('./toolAttributes.js').attributes
-var marker = toolAttributes.marker
-var eraser = toolAttributes.eraser
+let toolAttributes = require('./toolAttributes.js').attributes
+let marker = toolAttributes.marker
+let eraser = toolAttributes.eraser
 
-var selectedTool = require('./toolAttributes.js').selectedTool
-var openedPalette = require('./toolAttributes.js').openedPalette
+let selectedTool = require('./toolAttributes.js').selectedTool
+let openedPalette = require('./toolAttributes.js').openedPalette
 
 // Maps
-var colorMap = require('./maps.js').colorMap
-var sizeMap = require('./maps.js').sizeMap
+let colorMap = require('./maps.js').colorMap
+let sizeMap = require('./maps.js').sizeMap
 
 // Dom nodes
-var splatter = require('./domNodes.js').splatter
-var colorPalette = require('./domNodes.js').colorPalette
+let splatter = require('./domNodes.js').splatter
+let colorPalette = require('./domNodes.js').colorPalette
 
-var size = require('./domNodes.js').size
-var markerSizePalette = require('./domNodes.js').markerSizePalette
-var eraserSizePalette = require('./domNodes.js').eraserSizePalette
+let size = require('./domNodes.js').size
+let markerSizePalette = require('./domNodes.js').markerSizePalette
+let eraserSizePalette = require('./domNodes.js').eraserSizePalette
 
-var getColorElement = require('./domNodes.js').getColorElement
-var getSizeElement = require('./domNodes.js').getSizeElement
-var getPaletteElement = require('./domNodes.js').getPaletteElement
+let getColorElement = require('./domNodes.js').getColorElement
+let getSizeElement = require('./domNodes.js').getSizeElement
+let getPaletteElement = require('./domNodes.js').getPaletteElement
 
-var toggleTool = function (tool) {
+let toggleTool = function (tool) {
   // Display the version of the tool that is being hidden and
   // hide the one that is displayed
-  var toDisplay = document.querySelector(`.${tool.classList[1]}.no-display`);
+  let toDisplay = document.querySelector(`.${tool.classList[1]}.no-display`);
   tool.classList.add('no-display');
   toDisplay.classList.remove('no-display');
 
   return toDisplay
 }
 
-var addToolPaletteListener = function (tool) {
+let addToolPaletteListener = function (tool) {
   tool.addEventListener('mousedown', function () {
     selectTool(tool)
   })
 }
 
-var selectTool = function (tool) {
-  var newTool
+let selectTool = function (tool) {
+  let newTool
   if (tool !== selectedTool.element) {
     newTool = toggleTool(tool);
     if (selectedTool.element) {
@@ -51,22 +51,22 @@ var selectTool = function (tool) {
   }
 }
 
-var addColorToolListener = function (splatter) {
+let addColorToolListener = function (splatter) {
   splatter.addEventListener('mousedown', function (e) {
     togglePalette('color')
   });
 }
 
 
-var addColorPaletteListener = function (color) {
+let addColorPaletteListener = function (color) {
   color.addEventListener('mousedown', function (e) {
     selectColor(color)
     togglePalette()
   });
 }
 
-var selectColor = function (color) {
-  var previousColor = marker.color;
+let selectColor = function (color) {
+  let previousColor = marker.color;
   marker.color = colorMap[color.classList[1]];
 
   // Toggle the border around the black splatter
@@ -78,7 +78,7 @@ var selectColor = function (color) {
   splatter.setAttribute("style", `background-color: ${marker.color}`)
 }
 
-var addSizeToolListener = function (size) {
+let addSizeToolListener = function (size) {
   size.addEventListener('mousedown', function (e) {
     if (selectedTool.name === 'marker') {
       togglePalette('marker-size')
@@ -88,14 +88,14 @@ var addSizeToolListener = function (size) {
   })
 }
 
-// var addSizePaletteListener = function (size, index) {
+// let addSizePaletteListener = function (size, index) {
 //   size.addEventListener('mousedown', function (e) {
 //     selectMarkerSize(size)
 //     togglePalette()
 //   });
 // }
 
-// var selectMarkerSize = function (size) {
+// let selectMarkerSize = function (size) {
 //   marker.size = sizeMap[size.classList[1].replace('size-', '')];
 //   size.classList.toggle('selected')
 //   if (marker.sizeElement) {
@@ -104,15 +104,15 @@ var addSizeToolListener = function (size) {
 //   marker.sizeElement = size;
 // }
 
-var addSizePaletteListener = function (size, index) {
+let addSizePaletteListener = function (size, index) {
   size.addEventListener('mousedown', function (e) {
     selectSize(size, 'marker')
     togglePalette()
   });
 }
 
-var selectSize = function (size, type) {
-  var tool = type === 'marker' ? marker : eraser
+let selectSize = function (size, type) {
+  let tool = type === 'marker' ? marker : eraser
 
   tool.size = sizeMap[size.classList[1].replace('size-', '')];
   size.classList.toggle('selected')
@@ -124,7 +124,7 @@ var selectSize = function (size, type) {
 
 
 // Palette functions
-var togglePalette = function (name) {
+let togglePalette = function (name) {
   if (name && name !== openedPalette.name) {
     openPalette(name)
   } else {
@@ -132,7 +132,7 @@ var togglePalette = function (name) {
   }
 }
 
-var openPalette = function (name) {
+let openPalette = function (name) {
   closePalette()
 
   openedPalette.name = name
@@ -140,7 +140,7 @@ var openPalette = function (name) {
   openedPalette.element.classList.toggle('open-palette')
 }
 
-var closePalette = function () {
+let closePalette = function () {
   if (openedPalette.element) {
     openedPalette.element.classList.toggle('open-palette')
     openedPalette.name = ''
