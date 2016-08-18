@@ -1,94 +1,57 @@
-var draw = require('./draw.js')
+import { ToolPalette } from './toolPalette'
+import { canvas, loadingOverlay, board } from './domNodes'
+import { mouseMove, mouseDown, mouseUpAndOut } from './draw'
+import { canvasData } from './canvasData'
 
-// Tool attributes
-var toolAttributes = require('./toolAttributes.js').attributes
-var marker = toolAttributes.marker
-var eraser = toolAttributes.eraser
-
-var selectedTool = require('./toolAttributes.js').selectedTool
-
-// Dom nodes
-var canvas = require('./domNodes.js').canvas
-var board = require('./domNodes.js').board
-var toolList = require('./domNodes.js').toolList
-
-var splatter = require('./domNodes.js').splatter
-var splatterOutline = require('./domNodes.js').splatterOutline
-var colorPalette = require('./domNodes.js').colorPalette
-
-var size = require('./domNodes.js').size
-var markerSizePalette = require('./domNodes.js').markerSizePalette
-var eraserSizePalette = require('./domNodes.js').eraserSizePalette
-
-var getColorElement = require('./domNodes.js').getColorElement
-var getSizeElement = require('./domNodes.js').getSizeElement
-var getPaletteElement = require('./domNodes.js').getPaletteElement
-
-// Tools
-var selectMarkerSize = require('./tools.js').selectMarkerSize
-var selectTool = require('./tools.js').selectTool
-var selectColor = require('./tools.js').selectColor
-var addToolPaletteListener = require('./tools.js').addToolPaletteListener
-var addColorPaletteListener = require('./tools.js').addColorPaletteListener
-var addSizePaletteListener = require('./tools.js').addSizePaletteListener
-var addColorToolListener = require('./tools.js').addColorToolListener
-var addSizeToolListener = require('./tools.js').addSizeToolListener
-
-// Populate canvas with current draw data
-var canvasData = require('./canvasData').canvasData
-var url = window.location.href
-var canvasName = url.substring(url.lastIndexOf('/') + 1)
-canvasData.name = canvasName
+let socket
 
 document.addEventListener('DOMContentLoaded', function() {
+  initializeSockets()
 
-  // Initialize the canvas and draw settings
-  setSize();
-  canvas.width = board.offsetWidth;
-  canvas.height = board.offsetHeight;
+  const toolPalette = new ToolPalette()
 
-  // Select the default tool, color and size
-  selectTool(document.querySelector('.marker'))
+  canvas.width = board.offsetWidth
+  canvas.height = board.offsetHeight
 
-  selectMarkerSize(getSizeElement(5, 'marker'))
-  selectColor(getColorElement('gray'))
+  addCanvasListeners(toolPalette)
 
-  // Adds listeners to select the tool, color, size etc.
-  var tools = Array.prototype.slice.call(toolList.children);
-  tools.forEach(addToolPaletteListener);
+})
 
-  var colors = Array.prototype.slice.call(colorPalette.children);
-  colors.forEach(addColorPaletteListener);
+function initializeSockets() {
+  socket = io()
+  socket.emit("new_user", canvasData)
 
-  var markerSizes = Array.prototype.slice.call(markerSizePalette.children);
-  markerSizes.forEach(addSizePaletteListener);
+  socket.on("canvas_redraw", function(canvas) {
+    loadingOverlay.classList.add("no-display")
+  })
 
-  // Adds listener to open palettes
-  addColorToolListener(splatter)
-  addColorToolListener(splatterOutline)
+  socket.on("canvas_update", function(data) {
+    update(data.points[0], data.points[1], data.toolAttributes)
+  })
+}
 
-  addSizeToolListener(size)
+function addCanvasListeners(toolPalette) {
+  canvas.addEventListener('mousemove', function(e) {
+    const drawData = mouseMove(toolPalette.selectedTool, e)
 
-  // Drawing functionality
-  canvas.addEventListener('mousemove', function (e) {
-    draw('move', e);
-  }, false);
+    if (drawData) {
+      socket.emit("new_stroke", drawData)
+    }
+  })
 
-  canvas.addEventListener('mousedown', function (e) {
-    draw('down', e);
-  }, false);
+  canvas.addEventListener('mousedown', function(e) {
+    const drawData = mouseDown(toolPalette.selectedTool, e)
 
-  canvas.addEventListener('mouseup', function (e) {
-    draw('up', e);
-  }, false);
+    if (drawData) {
+      socket.emit("new_stroke", drawData)
+    }
+  })
 
-  canvas.addEventListener('mouseout', function (e) {
-    draw('out', e);
-  }, false);
+  canvas.addEventListener('mouseup', function(e) {
+    mouseUpAndOut()
+  })
 
-
-  function setSize () {
-    canvas.width = board.offsetWidth;
-    canvas.height = board.offsetHeight;
-  }
-});
+  canvas.addEventListener('mouseout', function(e) {
+    mouseUpAndOut()
+  })
+}

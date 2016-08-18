@@ -1,56 +1,37 @@
-var colorMap = require('./maps.js').colorMap
-var sizeMap = require('./maps.js').sizeMap
+import {
+  colorMap,
+  sizeMap,
+} from './maps.js'
 
-var canvas = document.getElementById('canvas-main');
-var board = document.querySelector('.board');
+export const toolList = document.querySelector('.tool-palette')
+export const canvas = document.getElementById('canvas-main')
+export const board = document.querySelector('.board');
+export const loadingOverlay = document.querySelector('.loading-overlay')
 
-var toolList = document.querySelector('.toolList');
-
-var splatter = document.querySelector('.splatter');
-var splatterOutline = document.querySelector('.splatter-outline');
-var colorPalette = document.querySelector('.color-palette');
-
-var size = document.querySelector('.size');
-var markerSizePalette = document.querySelector('.marker-size-palette')
-var eraserSizePalette = document.querySelector('.eraser-size-palette')
-
-var loadingOverlay = document.querySelector('.loading-overlay')
-
-var getPaletteElement = function (name) {
+export const getPaletteElement = function (name) {
   return document.querySelector(`.${name}-palette`)
 }
 
-var getSizeElement = function (size, type) {
-  if (type === 'marker') {
-    return markerSizePalette.querySelector(`.size-circle.size-${size}`)
+export const getSizeElement = function (index, name) {
+  if (name === 'marker') {
+    const markerSizePalette = getPaletteElement('marker-size')
+    return markerSizePalette.querySelector(`.size-circle.size-${index}`)
   }
-  if (type === 'eraser') {
-    return eraserSizePalette.querySelector(`.size-circle.size-${size}`)
+  if (name === 'eraser') {
+    const eraserSizePalette = getPaletteElement('eraser-size')
+    return eraserSizePalette.querySelector(`.size-circle.size-${index}`)
   }
+
+  console.error(`[${name}] is not a valid tool for getting a size element`)
 }
 
-var getColorElement = function (color) {
+export const getColorElement = function (color) {
+  const colorPalette = getPaletteElement('color')
   return colorPalette.querySelector(`.color-box.${color}`)
 }
 
-var getToolElement = function (name, displayed) {
-  if (displayed)
-  return toolList.querySelector(`.${name}`)
-}
-
-module.exports = {
-  canvas: canvas,
-  board: board,
-  toolList: toolList,
-  splatter: splatter,
-  splatterOutline: splatterOutline,
-  colorPalette: colorPalette,
-  size: size,
-  getSizeElement: getSizeElement,
-  getColorElement: getColorElement,
-  getToolElement: getToolElement,
-  getPaletteElement: getPaletteElement,
-  markerSizePalette: markerSizePalette,
-  eraserSizePalette: eraserSizePalette,
-  loadingOverlay: loadingOverlay
+export const getToolElement = function (name, displayed=true) {
+  return displayed ?
+    toolList.querySelector(`.${name}.display`) :
+    toolList.querySelector(`.${name}.no-display`)
 }

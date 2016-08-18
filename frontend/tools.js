@@ -1,141 +1,163 @@
-// Tool attributes
-var toolAttributes = require('./toolAttributes.js').attributes
-var marker = toolAttributes.marker
-var eraser = toolAttributes.eraser
+import {
+  colorMap,
+  sizeMap,
+  TOOL_START_INDEX,
+  NAME_INDEX,
+} from './maps'
 
-var selectedTool = require('./toolAttributes.js').selectedTool
-var openedPalette = require('./toolAttributes.js').openedPalette
+import {
+  getToolElement,
+  getPaletteElement,
+  getSizeElement,
+} from './domNodes'
 
-// Maps
-var colorMap = require('./maps.js').colorMap
-var sizeMap = require('./maps.js').sizeMap
+class Tool {
+  constructor(name, el) {
+    this.name = name
+    this.el = el
 
-// Dom nodes
-var splatter = require('./domNodes.js').splatter
-var colorPalette = require('./domNodes.js').colorPalette
+    this.toggle = this.toggle.bind(this)
+  }
 
-var size = require('./domNodes.js').size
-var markerSizePalette = require('./domNodes.js').markerSizePalette
-var eraserSizePalette = require('./domNodes.js').eraserSizePalette
+  toggle() {
+    console.log('toggling:', this.name)
+    const elToDisplay = getToolElement(this.name, false)
 
-var getColorElement = require('./domNodes.js').getColorElement
-var getSizeElement = require('./domNodes.js').getSizeElement
-var getPaletteElement = require('./domNodes.js').getPaletteElement
+    this.el.classList.remove('display')
+    this.el.classList.add('no-display')
 
-var toggleTool = function (tool) {
-  // Display the version of the tool that is being hidden and
-  // hide the one that is displayed
-  var toDisplay = document.querySelector(`.${tool.classList[1]}.no-display`);
-  tool.classList.add('no-display');
-  toDisplay.classList.remove('no-display');
+    elToDisplay.classList.remove('no-display')
+    elToDisplay.classList.add('display')
 
-  return toDisplay
+    this.el = elToDisplay
+  }
 }
 
-var addToolPaletteListener = function (tool) {
-  tool.addEventListener('mousedown', function () {
-    selectTool(tool)
-  })
-}
+class Stroker extends Tool {
+  constructor(name, el, color, sizeIndex) {
+    super(name, el)
 
-var selectTool = function (tool) {
-  var newTool
-  if (tool !== selectedTool.element) {
-    newTool = toggleTool(tool);
-    if (selectedTool.element) {
-      toggleTool(selectedTool.element);
+    this.color = color
+    this.size = sizeMap[sizeIndex]
+    this.sizeEl = getSizeElement(sizeIndex, name)
+    this.sizeEl.classList.toggle('selected')
+
+    this.selectSizeByIndex = this.selectSizeByIndex.bind(this)
+    this.selectSizeByElement = this.selectSizeByElement.bind(this)
+  }
+  selectSizeByIndex(sizeIndex) {
+    if (sizeIndex > sizeMap.length - 1) {
+      console.error('sizeIndex is not valid')
     }
-    selectedTool.element = newTool;
-    selectedTool.name = newTool.classList[1]
-    selectedTool.attributes = toolAttributes[selectedTool.name]
-  }
-}
+    this.size = sizeMap[sizeIndex]
 
-var addColorToolListener = function (splatter) {
-  splatter.addEventListener('mousedown', function (e) {
-    togglePalette('color')
-  });
-}
-
-
-var addColorPaletteListener = function (color) {
-  color.addEventListener('mousedown', function (e) {
-    selectColor(color)
-    togglePalette()
-  });
-}
-
-var selectColor = function (color) {
-  var previousColor = marker.color;
-  marker.color = colorMap[color.classList[1]];
-
-  // Toggle the border around the black splatter
-  if ((marker.color === '#151515' || previousColor === '#151515')
-    && previousColor !== marker.color) {
-    splatter = toggleTool(splatter);
+    let newSizeEl = getSizeElement(sizeIndex, this.name)
+    this._setSize(newSizeEl)
   }
 
-  splatter.setAttribute("style", `background-color: ${marker.color}`)
-}
+  selectSizeByElement(newSizeEl) {
+    this.size = sizeMap[newSizeEl.classList[NAME_INDEX].replace('size-', '')]
 
-var addSizeToolListener = function (size) {
-  size.addEventListener('mousedown', function (e) {
-    if (selectedTool.name === 'marker') {
-      togglePalette('marker-size')
-    } else if (selectedTool.name === 'eraser') {
-      togglePalette('eraser-size')
+    this._setSize(newSizeEl)
+  }
+
+  // Private
+  _setSize(newSizeEl) {
+    newSizeEl.classList.toggle('selected')
+    if (this.sizeEl) {
+      this.sizeEl.classList.toggle('selected')
     }
-  })
-}
-
-var addSizePaletteListener = function (size, index) {
-  size.addEventListener('mousedown', function (e) {
-    selectMarkerSize(size)
-    togglePalette()
-  });
-}
-
-var selectMarkerSize = function (size) {
-  marker.size = sizeMap[size.classList[1].replace('size-', '')];
-  size.classList.toggle('selected')
-  if (marker.sizeElement) {
-    marker.sizeElement.classList.toggle('selected')
-  }
-  marker.sizeElement = size;
-}
-
-var togglePalette = function (name) {
-  if (name && name !== openedPalette.name) {
-    openPalette(name)
-  } else {
-    closePalette()
+    this.sizeEl = newSizeEl
   }
 }
 
-var openPalette = function (name) {
-  closePalette()
+export class Marker extends Stroker {
+  constructor(color, sizeIndex, splatter) {
+    super('marker', getToolElement('marker'), color, sizeIndex)
+    this.splatter = splatter
 
-  openedPalette.name = name
-  openedPalette.element = getPaletteElement(name)
-  openedPalette.element.classList.toggle('open-palette')
-}
+    this.splatter.setBackgroundColor(null, 'gray')
 
-var closePalette = function () {
-  if (openedPalette.element) {
-    openedPalette.element.classList.toggle('open-palette')
-    openedPalette.name = ''
-    openedPalette.element = null
+    this.selectColorByElement = this.selectColorByElement.bind(this)
+    this.selectColorByName = this.selectColorByName.bind(this)
+  }
+
+  selectColorByElement(colorEl) {
+    const previousColor = this.color
+    this.color = colorMap[colorEl.classList[NAME_INDEX]]
+    this.splatter.setBackgroundColor(previousColor, this.color)
+  }
+
+  selectColorByName(color) {
+    const previousColor = this.color
+    this.color = colorMap[color]
   }
 }
 
-module.exports = {
-  toggleTool: toggleTool,
-  addToolPaletteListener: addToolPaletteListener,
-  selectTool: selectTool,
-  addColorToolListener: addColorToolListener,
-  addColorPaletteListener: addColorPaletteListener,
-  selectColor: selectColor,
-  addSizePaletteListener: addSizePaletteListener,
-  addSizeToolListener: addSizeToolListener,
-  selectMarkerSize: selectMarkerSize,
+export class Eraser extends Stroker {
+  constructor(size) {
+    super('eraser', getToolElement('eraser'), '#fff', size)
+  }
+}
+
+class PaletteTool extends Tool {
+  constructor(name) {
+    const el = getToolElement(name)
+    super(name, el)
+
+    this.addPalette = this.addPalette.bind(this)
+  }
+
+  addPalette(palette) {
+    this.palette = Object.assign({ [palette.name]: palette }, this.palette)
+  }
+}
+
+export class Splatter extends PaletteTool {
+  constructor() {
+    super('splatter')
+
+    this.setBackgroundColor = this.setBackgroundColor.bind(this)
+  }
+
+  setBackgroundColor(previousColor, color) {
+    // Toggle the border around the black splatter
+    if ((color === colorMap['black'] || previousColor === colorMap['black'])
+      && previousColor !== color) {
+      this.toggle()
+    }
+
+    this.el.setAttribute("style", `background-color: ${color}`)
+  }
+}
+
+export class Dots extends PaletteTool {
+  constructor() {
+    super('dots')
+  }
+}
+
+export class Palette {
+  constructor(name) {
+    this.name = name
+    this.el = getPaletteElement(name)
+
+    this.toggle = this.toggle.bind(this)
+    this.addListeners = this.addListeners.bind(this)
+  }
+
+  toggle() {
+    this.el.classList.toggle('open-palette')
+  }
+
+  addListeners(selectChild, setPalette) {
+    const children = Array.prototype.slice.call(this.el.children)
+    children.forEach((child) => {
+      child.addEventListener('click', (e) => {
+        selectChild(child)
+        this.toggle()
+        setPalette(null)
+      })
+    })
+  }
 }
