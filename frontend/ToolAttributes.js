@@ -1,4 +1,4 @@
-var toolList = require('./domNodes.js').toolList
+let toolList = require('./domNodes.js').toolList
 
 module.exports.attributes = {
   marker: {

@@ -20,13 +20,13 @@
     <span class="error" id="js-error"></span>
 
     <script>
-      var createButton = document.getElementById('js-create');
-      var nameInput = document.getElementById('js-name');
-      var errorSpan = document.getElementById('js-error');
+      let createButton = document.getElementById('js-create');
+      let nameInput = document.getElementById('js-name');
+      let errorSpan = document.getElementById('js-error');
 
       createButton.addEventListener('click', function() {
         // Validate name input
-        var name = nameInput.value
+        let name = nameInput.value
 
         if (name.trim() !== '') {
           axios.post('/api/canvas', {

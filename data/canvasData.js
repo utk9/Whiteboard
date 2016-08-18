@@ -1,11 +1,11 @@
-var canvasMap = new Object();
+let canvasMap = new Object();
 
-var Point = function (x, y) {
+let Point = function (x, y) {
 	this.x = x;
 	this.y = y;
 }
 
-var Canvas = function (name, width, height, strokes) {
+let Canvas = function (name, width, height, strokes) {
 	this.name = name;
 	this.width = width;
 	this.height = height;

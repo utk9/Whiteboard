@@ -1,15 +1,15 @@
-var canvas = require('./domNodes').canvas;
-var loadingOverlay = require('./domNodes').loadingOverlay;
-var selectedTool = require('./toolAttributes').selectedTool;
+let canvas = require('./domNodes').canvas;
+let loadingOverlay = require('./domNodes').loadingOverlay;
+let selectedTool = require('./toolAttributes').selectedTool;
 
-var canvasData = require('./canvasData.js').canvasData;
+let canvasData = require('./canvasData.js').canvasData;
 
-var drawing = false;
-var prevPos = { x: 0, y: 0 }
-var curPos = { x: 0, y: 0 }
-var ctx = canvas.getContext('2d');
+let drawing = false;
+let prevPos = { x: 0, y: 0 }
+let curPos = { x: 0, y: 0 }
+let ctx = canvas.getContext('2d');
 
-var socket = io();
+let socket = io();
 socket.emit("new_user", canvasData);
 
 socket.on("canvas_redraw", function (canvas) {
@@ -20,7 +20,7 @@ socket.on("canvas_update", function(data) {
   update(data.points[0], data.points[1], data.toolAttributes)
 });
 
-var draw = function(type, e) {
+let draw = function(type, e) {
 
   if (type === 'down') {
     setCurrentPos(e);

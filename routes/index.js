@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var Canvas = require('../data/canvasData.js').Canvas;
-var canvasMap = require('../data/canvasData.js').canvasMap;
+let express = require('express');
+let router = express.Router();
+let Canvas = require('../data/canvasData.js').Canvas;
+let canvasMap = require('../data/canvasData.js').canvasMap;
 
 //Routes ======================================================
 router.get('/', function(req, res, next) {
-  res.render('index');
+  res.render('whiteboard'); //REMOVE!!
 });
 
 router.get('/create', function(req, res) {
@@ -18,7 +18,7 @@ router.get('/join', function(req, res) {
 
 //API =========================================================
 router.post('/api/canvas', function (req, res) {
-	var name = req.body.name;
+	let name = req.body.name;
 	if (canvasMap.hasOwnProperty(name)) {
 		res.status(403).json({
 			success: false,
@@ -39,7 +39,7 @@ router.get('/api/canvas', function(req, res) {
 });
 
 router.get('/api/canvas/:name', function(req, res) {
-	var name = req.params.name;
+	let name = req.params.name;
 	if (canvasMap.hasOwnProperty(name)) {
 		res.json(canvasMap[req.params.name]);
 	} else {
@@ -56,7 +56,7 @@ router.get('/api/canvas/:name', function(req, res) {
 
 //whiteboard route
 router.get('/:name', function(req, res) {
-	var name = req.params.name;
+	let name = req.params.name;
 	if (canvasMap.hasOwnProperty(name)) {
 		res.render('whiteboard');
 	} else {
