@@ -1,3 +1,7 @@
+* {
+  cursor: default;
+}
+
 .board {
   position: absolute;
   top: 0;

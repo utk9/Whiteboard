@@ -25,7 +25,7 @@ var getSizeElement = require('./domNodes.js').getSizeElement
 var getPaletteElement = require('./domNodes.js').getPaletteElement
 
 // Tools
-var selectMarkerSize = require('./tools.js').selectMarkerSize
+var selectSize = require('./tools.js').selectSize
 var selectTool = require('./tools.js').selectTool
 var selectColor = require('./tools.js').selectColor
 var addToolPaletteListener = require('./tools.js').addToolPaletteListener
@@ -49,8 +49,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   // Select the default tool, color and size
   selectTool(document.querySelector('.marker'))
-
-  selectMarkerSize(getSizeElement(5, 'marker'))
+  selectSize(getSizeElement(5, 'marker'), 'marker')
   selectColor(getColorElement('gray'))
 
   // Adds listeners to select the tool, color, size etc.

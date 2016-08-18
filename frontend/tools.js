@@ -88,22 +88,42 @@ var addSizeToolListener = function (size) {
   })
 }
 
+// var addSizePaletteListener = function (size, index) {
+//   size.addEventListener('mousedown', function (e) {
+//     selectMarkerSize(size)
+//     togglePalette()
+//   });
+// }
+
+// var selectMarkerSize = function (size) {
+//   marker.size = sizeMap[size.classList[1].replace('size-', '')];
+//   size.classList.toggle('selected')
+//   if (marker.sizeElement) {
+//     marker.sizeElement.classList.toggle('selected')
+//   }
+//   marker.sizeElement = size;
+// }
+
 var addSizePaletteListener = function (size, index) {
   size.addEventListener('mousedown', function (e) {
-    selectMarkerSize(size)
+    selectSize(size, 'marker')
     togglePalette()
   });
 }
 
-var selectMarkerSize = function (size) {
-  marker.size = sizeMap[size.classList[1].replace('size-', '')];
+var selectSize = function (size, type) {
+  var tool = type === 'marker' ? marker : eraser
+
+  tool.size = sizeMap[size.classList[1].replace('size-', '')];
   size.classList.toggle('selected')
-  if (marker.sizeElement) {
-    marker.sizeElement.classList.toggle('selected')
+  if (tool.sizeElement) {
+    tool.sizeElement.classList.toggle('selected')
   }
-  marker.sizeElement = size;
+  tool.sizeElement = size;
 }
 
+
+// Palette functions
 var togglePalette = function (name) {
   if (name && name !== openedPalette.name) {
     openPalette(name)
@@ -137,5 +157,5 @@ module.exports = {
   selectColor: selectColor,
   addSizePaletteListener: addSizePaletteListener,
   addSizeToolListener: addSizeToolListener,
-  selectMarkerSize: selectMarkerSize,
+  selectSize: selectSize,
 }
