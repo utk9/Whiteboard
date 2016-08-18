@@ -44,49 +44,51 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var draw = __webpack_require__(1)
+	'use strict';
+
+	var draw = __webpack_require__(1);
 
 	// Tool attributes
-	var toolAttributes = __webpack_require__(4).attributes
-	var marker = toolAttributes.marker
-	var eraser = toolAttributes.eraser
+	var toolAttributes = __webpack_require__(4).attributes;
+	var marker = toolAttributes.marker;
+	var eraser = toolAttributes.eraser;
 
-	var selectedTool = __webpack_require__(4).selectedTool
+	var selectedTool = __webpack_require__(4).selectedTool;
 
 	// Dom nodes
-	var canvas = __webpack_require__(2).canvas
-	var board = __webpack_require__(2).board
-	var toolList = __webpack_require__(2).toolList
+	var canvas = __webpack_require__(2).canvas;
+	var board = __webpack_require__(2).board;
+	var toolList = __webpack_require__(2).toolList;
 
-	var splatter = __webpack_require__(2).splatter
-	var splatterOutline = __webpack_require__(2).splatterOutline
-	var colorPalette = __webpack_require__(2).colorPalette
+	var splatter = __webpack_require__(2).splatter;
+	var splatterOutline = __webpack_require__(2).splatterOutline;
+	var colorPalette = __webpack_require__(2).colorPalette;
 
-	var size = __webpack_require__(2).size
-	var markerSizePalette = __webpack_require__(2).markerSizePalette
-	var eraserSizePalette = __webpack_require__(2).eraserSizePalette
+	var size = __webpack_require__(2).size;
+	var markerSizePalette = __webpack_require__(2).markerSizePalette;
+	var eraserSizePalette = __webpack_require__(2).eraserSizePalette;
 
-	var getColorElement = __webpack_require__(2).getColorElement
-	var getSizeElement = __webpack_require__(2).getSizeElement
-	var getPaletteElement = __webpack_require__(2).getPaletteElement
+	var getColorElement = __webpack_require__(2).getColorElement;
+	var getSizeElement = __webpack_require__(2).getSizeElement;
+	var getPaletteElement = __webpack_require__(2).getPaletteElement;
 
 	// Tools
-	var selectMarkerSize = __webpack_require__(6).selectMarkerSize
-	var selectTool = __webpack_require__(6).selectTool
-	var selectColor = __webpack_require__(6).selectColor
-	var addToolPaletteListener = __webpack_require__(6).addToolPaletteListener
-	var addColorPaletteListener = __webpack_require__(6).addColorPaletteListener
-	var addSizePaletteListener = __webpack_require__(6).addSizePaletteListener
-	var addColorToolListener = __webpack_require__(6).addColorToolListener
-	var addSizeToolListener = __webpack_require__(6).addSizeToolListener
+	var selectMarkerSize = __webpack_require__(6).selectMarkerSize;
+	var selectTool = __webpack_require__(6).selectTool;
+	var selectColor = __webpack_require__(6).selectColor;
+	var addToolPaletteListener = __webpack_require__(6).addToolPaletteListener;
+	var addColorPaletteListener = __webpack_require__(6).addColorPaletteListener;
+	var addSizePaletteListener = __webpack_require__(6).addSizePaletteListener;
+	var addColorToolListener = __webpack_require__(6).addColorToolListener;
+	var addSizeToolListener = __webpack_require__(6).addSizeToolListener;
 
 	// Populate canvas with current draw data
-	var canvasData = __webpack_require__(5).canvasData
-	var url = window.location.href
-	var canvasName = url.substring(url.lastIndexOf('/') + 1)
-	canvasData.name = canvasName
+	var canvasData = __webpack_require__(5).canvasData;
+	var url = window.location.href;
+	var canvasName = url.substring(url.lastIndexOf('/') + 1);
+	canvasData.name = canvasName;
 
-	document.addEventListener('DOMContentLoaded', function() {
+	document.addEventListener('DOMContentLoaded', function () {
 
 	  // Initialize the canvas and draw settings
 	  setSize();
@@ -94,10 +96,10 @@
 	  canvas.height = board.offsetHeight;
 
 	  // Select the default tool, color and size
-	  selectTool(document.querySelector('.marker'))
+	  selectTool(document.querySelector('.marker'));
 
-	  selectMarkerSize(getSizeElement(5, 'marker'))
-	  selectColor(getColorElement('gray'))
+	  selectMarkerSize(getSizeElement(5, 'marker'));
+	  selectColor(getColorElement('gray'));
 
 	  // Adds listeners to select the tool, color, size etc.
 	  var tools = Array.prototype.slice.call(toolList.children);
@@ -110,10 +112,10 @@
 	  markerSizes.forEach(addSizePaletteListener);
 
 	  // Adds listener to open palettes
-	  addColorToolListener(splatter)
-	  addColorToolListener(splatterOutline)
+	  addColorToolListener(splatter);
+	  addColorToolListener(splatterOutline);
 
-	  addSizeToolListener(size)
+	  addSizeToolListener(size);
 
 	  // Drawing functionality
 	  canvas.addEventListener('mousemove', function (e) {
@@ -132,17 +134,17 @@
 	    draw('out', e);
 	  }, false);
 
-
-	  function setSize () {
+	  function setSize() {
 	    canvas.width = board.offsetWidth;
 	    canvas.height = board.offsetHeight;
 	  }
 	});
 
-
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
 
 	var canvas = __webpack_require__(2).canvas;
 	var loadingOverlay = __webpack_require__(2).loadingOverlay;
@@ -151,23 +153,22 @@
 	var canvasData = __webpack_require__(5).canvasData;
 
 	var drawing = false;
-	var prevPos = { x: 0, y: 0 }
-	var curPos = { x: 0, y: 0 }
+	var prevPos = { x: 0, y: 0 };
+	var curPos = { x: 0, y: 0 };
 	var ctx = canvas.getContext('2d');
 
 	var socket = io();
 	socket.emit("new_user", canvasData);
 
 	socket.on("canvas_redraw", function (canvas) {
-	  console.log(canvas);
 	  loadingOverlay.classList.add("no-display");
 	});
 
-	socket.on("canvas_update", function(data) {
-	  console.log(data);
+	socket.on("canvas_update", function (data) {
+	  update(data.points[0], data.points[1], data.toolAttributes);
 	});
 
-	var draw = function(type, e) {
+	var draw = function draw(type, e) {
 
 	  if (type === 'down') {
 	    setCurrentPos(e);
@@ -175,12 +176,11 @@
 	    // Draw the first dot
 	    ctx.beginPath();
 	    ctx.fillStyle = selectedTool.attributes.color;
-	    ctx.arc(curPos.x, curPos.y, selectedTool.attributes.size/2, 0, 2 * Math.PI);
+	    ctx.arc(curPos.x, curPos.y, selectedTool.attributes.size / 2, 0, 2 * Math.PI);
 	    ctx.fill();
 	    ctx.closePath();
 
 	    drawing = true;
-
 	  } else if (type === 'move') {
 	    if (drawing) {
 	      setPrevPos();
@@ -190,8 +190,7 @@
 	  } else if (type === 'up' || type === 'out') {
 	    drawing = false;
 	  }
-
-	}
+	};
 
 	function setPrevPos() {
 	  prevPos.x = curPos.x;
@@ -213,10 +212,8 @@
 	  ctx.moveTo(prevPos.x, prevPos.y);
 	  ctx.lineTo(curPos.x, curPos.y);
 
-	  debugger
-
 	  socket.emit("new_stroke", {
-	    toolAttribue: selectedTool.attributes,
+	    toolAttributes: selectedTool.attributes,
 	    canvasName: canvasData.name,
 	    points: [prevPos, curPos]
 	  });
@@ -225,15 +222,30 @@
 	  ctx.closePath();
 	}
 
-	module.exports = draw
+	function update(prevPos, curPos, toolAttributes) {
+	  ctx.beginPath();
 
+	  ctx.lineWidth = toolAttributes.size;
+	  ctx.strokeStyle = toolAttributes.color;
+
+	  ctx.lineJoin = ctx.lineCap = 'round';
+	  ctx.moveTo(prevPos.x, prevPos.y);
+	  ctx.lineTo(curPos.x, curPos.y);
+
+	  ctx.stroke();
+	  ctx.closePath();
+	}
+
+	module.exports = draw;
 
 /***/ },
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var colorMap = __webpack_require__(3).colorMap
-	var sizeMap = __webpack_require__(3).sizeMap
+	'use strict';
+
+	var colorMap = __webpack_require__(3).colorMap;
+	var sizeMap = __webpack_require__(3).sizeMap;
 
 	var canvas = document.getElementById('canvas-main');
 	var board = document.querySelector('.board');
@@ -245,32 +257,31 @@
 	var colorPalette = document.querySelector('.color-palette');
 
 	var size = document.querySelector('.size');
-	var markerSizePalette = document.querySelector('.marker-size-palette')
-	var eraserSizePalette = document.querySelector('.eraser-size-palette')
+	var markerSizePalette = document.querySelector('.marker-size-palette');
+	var eraserSizePalette = document.querySelector('.eraser-size-palette');
 
-	var loadingOverlay = document.querySelector('.loading-overlay')
+	var loadingOverlay = document.querySelector('.loading-overlay');
 
-	var getPaletteElement = function (name) {
-	  return document.querySelector(`.${name}-palette`)
-	}
+	var getPaletteElement = function getPaletteElement(name) {
+	  return document.querySelector('.' + name + '-palette');
+	};
 
-	var getSizeElement = function (size, type) {
+	var getSizeElement = function getSizeElement(size, type) {
 	  if (type === 'marker') {
-	    return markerSizePalette.querySelector(`.size-circle.size-${size}`)
+	    return markerSizePalette.querySelector('.size-circle.size-' + size);
 	  }
 	  if (type === 'eraser') {
-	    return eraserSizePalette.querySelector(`.size-circle.size-${size}`)
+	    return eraserSizePalette.querySelector('.size-circle.size-' + size);
 	  }
-	}
+	};
 
-	var getColorElement = function (color) {
-	  return colorPalette.querySelector(`.color-box.${color}`)
-	}
+	var getColorElement = function getColorElement(color) {
+	  return colorPalette.querySelector('.color-box.' + color);
+	};
 
-	var getToolElement = function (name, displayed) {
-	  if (displayed)
-	  return toolList.querySelector(`.${name}`)
-	}
+	var getToolElement = function getToolElement(name, displayed) {
+	  if (displayed) return toolList.querySelector('.' + name);
+	};
 
 	module.exports = {
 	  canvas: canvas,
@@ -287,14 +298,15 @@
 	  markerSizePalette: markerSizePalette,
 	  eraserSizePalette: eraserSizePalette,
 	  loadingOverlay: loadingOverlay
-	}
-
+	};
 
 /***/ },
 /* 3 */
 /***/ function(module, exports) {
 
-	module.exports.sizeMap = [45, 36, 30, 25, 20, 15, 10]
+	'use strict';
+
+	module.exports.sizeMap = [45, 36, 30, 25, 20, 15, 10];
 
 	module.exports.colorMap = {
 	  red: '#ec8168',
@@ -305,184 +317,185 @@
 	  purple: '#d7b0f2',
 	  gray: '#b8b8b8',
 	  black: '#151515',
-	  white: '#ffffff',
-	}
-
+	  white: '#ffffff'
+	};
 
 /***/ },
 /* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var toolList = __webpack_require__(2).toolList
+	'use strict';
+
+	var toolList = __webpack_require__(2).toolList;
 
 	module.exports.attributes = {
 	  marker: {
 	    color: '',
 	    size: 0,
-	    sizeElement: null,
+	    sizeElement: null
 	  },
 	  eraser: {
 	    color: '#fff',
 	    size: 0,
-	    sizeElement: null,
-	  },
+	    sizeElement: null
+	  }
 	};
 	module.exports.selectedTool = {
 	  name: '',
 	  element: null,
-	  attributes: {},
+	  attributes: {}
 	};
 	module.exports.openedPalette = {
 	  name: '',
-	  element: null,
-	}
-
+	  element: null
+	};
 
 /***/ },
 /* 5 */
 /***/ function(module, exports) {
 
+	'use strict';
+
 	module.exports.canvasData = {
 	  name: '',
 	  width: 0,
 	  height: 0,
-	  strokes: [],
-	}
-
+	  strokes: []
+	};
 
 /***/ },
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	// Tool attributes
-	var toolAttributes = __webpack_require__(4).attributes
-	var marker = toolAttributes.marker
-	var eraser = toolAttributes.eraser
+	'use strict';
 
-	var selectedTool = __webpack_require__(4).selectedTool
-	var openedPalette = __webpack_require__(4).openedPalette
+	// Tool attributes
+	var toolAttributes = __webpack_require__(4).attributes;
+	var marker = toolAttributes.marker;
+	var eraser = toolAttributes.eraser;
+
+	var selectedTool = __webpack_require__(4).selectedTool;
+	var openedPalette = __webpack_require__(4).openedPalette;
 
 	// Maps
-	var colorMap = __webpack_require__(3).colorMap
-	var sizeMap = __webpack_require__(3).sizeMap
+	var colorMap = __webpack_require__(3).colorMap;
+	var sizeMap = __webpack_require__(3).sizeMap;
 
 	// Dom nodes
-	var splatter = __webpack_require__(2).splatter
-	var colorPalette = __webpack_require__(2).colorPalette
+	var splatter = __webpack_require__(2).splatter;
+	var colorPalette = __webpack_require__(2).colorPalette;
 
-	var size = __webpack_require__(2).size
-	var markerSizePalette = __webpack_require__(2).markerSizePalette
-	var eraserSizePalette = __webpack_require__(2).eraserSizePalette
+	var size = __webpack_require__(2).size;
+	var markerSizePalette = __webpack_require__(2).markerSizePalette;
+	var eraserSizePalette = __webpack_require__(2).eraserSizePalette;
 
-	var getColorElement = __webpack_require__(2).getColorElement
-	var getSizeElement = __webpack_require__(2).getSizeElement
-	var getPaletteElement = __webpack_require__(2).getPaletteElement
+	var getColorElement = __webpack_require__(2).getColorElement;
+	var getSizeElement = __webpack_require__(2).getSizeElement;
+	var getPaletteElement = __webpack_require__(2).getPaletteElement;
 
-	var toggleTool = function (tool) {
+	var toggleTool = function toggleTool(tool) {
 	  // Display the version of the tool that is being hidden and
 	  // hide the one that is displayed
-	  var toDisplay = document.querySelector(`.${tool.classList[1]}.no-display`);
+	  var toDisplay = document.querySelector('.' + tool.classList[1] + '.no-display');
 	  tool.classList.add('no-display');
 	  toDisplay.classList.remove('no-display');
 
-	  return toDisplay
-	}
+	  return toDisplay;
+	};
 
-	var addToolPaletteListener = function (tool) {
+	var addToolPaletteListener = function addToolPaletteListener(tool) {
 	  tool.addEventListener('mousedown', function () {
-	    selectTool(tool)
-	  })
-	}
+	    selectTool(tool);
+	  });
+	};
 
-	var selectTool = function (tool) {
-	  var newTool
+	var selectTool = function selectTool(tool) {
+	  var newTool;
 	  if (tool !== selectedTool.element) {
 	    newTool = toggleTool(tool);
 	    if (selectedTool.element) {
 	      toggleTool(selectedTool.element);
 	    }
 	    selectedTool.element = newTool;
-	    selectedTool.name = newTool.classList[1]
-	    selectedTool.attributes = toolAttributes[selectedTool.name]
+	    selectedTool.name = newTool.classList[1];
+	    selectedTool.attributes = toolAttributes[selectedTool.name];
 	  }
-	}
+	};
 
-	var addColorToolListener = function (splatter) {
+	var addColorToolListener = function addColorToolListener(splatter) {
 	  splatter.addEventListener('mousedown', function (e) {
-	    togglePalette('color')
+	    togglePalette('color');
 	  });
-	}
+	};
 
-
-	var addColorPaletteListener = function (color) {
+	var addColorPaletteListener = function addColorPaletteListener(color) {
 	  color.addEventListener('mousedown', function (e) {
-	    selectColor(color)
-	    togglePalette()
+	    selectColor(color);
+	    togglePalette();
 	  });
-	}
+	};
 
-	var selectColor = function (color) {
+	var selectColor = function selectColor(color) {
 	  var previousColor = marker.color;
 	  marker.color = colorMap[color.classList[1]];
 
 	  // Toggle the border around the black splatter
-	  if ((marker.color === '#151515' || previousColor === '#151515')
-	    && previousColor !== marker.color) {
+	  if ((marker.color === '#151515' || previousColor === '#151515') && previousColor !== marker.color) {
 	    splatter = toggleTool(splatter);
 	  }
 
-	  splatter.setAttribute("style", `background-color: ${marker.color}`)
-	}
+	  splatter.setAttribute("style", 'background-color: ' + marker.color);
+	};
 
-	var addSizeToolListener = function (size) {
+	var addSizeToolListener = function addSizeToolListener(size) {
 	  size.addEventListener('mousedown', function (e) {
 	    if (selectedTool.name === 'marker') {
-	      togglePalette('marker-size')
+	      togglePalette('marker-size');
 	    } else if (selectedTool.name === 'eraser') {
-	      togglePalette('eraser-size')
+	      togglePalette('eraser-size');
 	    }
-	  })
-	}
-
-	var addSizePaletteListener = function (size, index) {
-	  size.addEventListener('mousedown', function (e) {
-	    selectMarkerSize(size)
-	    togglePalette()
 	  });
-	}
+	};
 
-	var selectMarkerSize = function (size) {
+	var addSizePaletteListener = function addSizePaletteListener(size, index) {
+	  size.addEventListener('mousedown', function (e) {
+	    selectMarkerSize(size);
+	    togglePalette();
+	  });
+	};
+
+	var selectMarkerSize = function selectMarkerSize(size) {
 	  marker.size = sizeMap[size.classList[1].replace('size-', '')];
-	  size.classList.toggle('selected')
+	  size.classList.toggle('selected');
 	  if (marker.sizeElement) {
-	    marker.sizeElement.classList.toggle('selected')
+	    marker.sizeElement.classList.toggle('selected');
 	  }
 	  marker.sizeElement = size;
-	}
+	};
 
-	var togglePalette = function (name) {
+	var togglePalette = function togglePalette(name) {
 	  if (name && name !== openedPalette.name) {
-	    openPalette(name)
+	    openPalette(name);
 	  } else {
-	    closePalette()
+	    closePalette();
 	  }
-	}
+	};
 
-	var openPalette = function (name) {
-	  closePalette()
+	var openPalette = function openPalette(name) {
+	  closePalette();
 
-	  openedPalette.name = name
-	  openedPalette.element = getPaletteElement(name)
-	  openedPalette.element.classList.toggle('open-palette')
-	}
+	  openedPalette.name = name;
+	  openedPalette.element = getPaletteElement(name);
+	  openedPalette.element.classList.toggle('open-palette');
+	};
 
-	var closePalette = function () {
+	var closePalette = function closePalette() {
 	  if (openedPalette.element) {
-	    openedPalette.element.classList.toggle('open-palette')
-	    openedPalette.name = ''
-	    openedPalette.element = null
+	    openedPalette.element.classList.toggle('open-palette');
+	    openedPalette.name = '';
+	    openedPalette.element = null;
 	  }
-	}
+	};
 
 	module.exports = {
 	  toggleTool: toggleTool,
@@ -493,9 +506,8 @@
 	  selectColor: selectColor,
 	  addSizePaletteListener: addSizePaletteListener,
 	  addSizeToolListener: addSizeToolListener,
-	  selectMarkerSize: selectMarkerSize,
-	}
-
+	  selectMarkerSize: selectMarkerSize
+	};
 
 /***/ }
 /******/ ]);
