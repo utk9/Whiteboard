@@ -5,16 +5,23 @@ var Point = function (x, y) {
 	this.y = y;
 }
 
-var Canvas = function (name, width, height, strokes) {
+var CanvasInfo = function (name, width, height, strokes) {
+	this.name = name,
+	this.width = width,
+	this.height = height,
+	this.strokes = strokes
+}
+
+var Canvas = function (name, pass, canvasInfo) {
 	this.name = name;
-	this.width = width;
-	this.height = height;
-	this.strokes = strokes;
+	this.pass = pass;
+	this.canvasInfo = canvasInfo;
 
 }
 
 module.exports = {
 	canvasMap: canvasMap,
 	Canvas: Canvas,
+	CanvasInfo: CanvasInfo,
 	Point: Point
 }

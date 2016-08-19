@@ -58,11 +58,11 @@ app.use(function(err, req, res, next) {
 io.on("connection", function(socket){
   socket.on("new_user", function (canvasData) {
     socket.join(canvasData.name);
-    socket.emit("canvas_redraw", canvasMap[canvasData.name]);
+    socket.emit("canvas_redraw", canvasMap[canvasData.name].canvasInfo);
   });
 
   socket.on("new_stroke", function (data) {
-    canvasMap[data.canvasName].strokes.push(data.points);
+    canvasMap[data.canvasName].canvasInfo.strokes.push(data.points);
     socket.broadcast.to(data.canvasName).emit ("canvas_update", data);
   });
 });

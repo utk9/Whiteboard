@@ -13,6 +13,7 @@ var socket = io();
 socket.emit("new_user", canvasData);
 
 socket.on("canvas_redraw", function (canvas) {
+  console.log(canvas);
   loadingOverlay.classList.add("no-display");
 });
 
