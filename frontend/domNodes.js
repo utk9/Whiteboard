@@ -4,7 +4,7 @@ let sizeMap = require('./maps.js').sizeMap
 let canvas = document.getElementById('canvas-main');
 let board = document.querySelector('.board');
 
-let toolList = document.querySelector('.toolList');
+let toolList = document.querySelector('.tool-palette');
 
 let splatter = document.querySelector('.splatter');
 let splatterOutline = document.querySelector('.splatter-outline');

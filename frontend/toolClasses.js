@@ -2,7 +2,7 @@ import {
   splatter,
   getToolElement,
   getPaletteElement,
-  getSizeElement
+  getSizeElement,
 } from './domNodes.js'
 
 import {
@@ -17,7 +17,7 @@ export class Tool {
   }
 
   toggle() {
-    var elToDisplay = getToolElement(this.name, false)
+    const elToDisplay = getToolElement(this.name, false)
 
     this.el.classList.remove('display')
     this.el.classList.add('no-display')
@@ -35,13 +35,27 @@ export class Stroker extends Tool {
 
     this.color = color
     this.size = sizeMap[sizeIndex]
-    debugger
     this.sizeEl = getSizeElement(sizeIndex, name)
+    this.sizeEl.classList.toggle('selected')
+  }
+  selectSizeWithIndex(sizeIndex) {
+    if (sizeIndex > sizeMap.length - 1) {
+      console.error('sizeIndex is not valid')
+    }
+    this.size = sizeMap[sizeIndex]
+
+    let newSizeEl = getSizeElement(sizeIndex, this.name)
+    this.setSize(newSizeEl)
   }
 
-  selectSize(sizeIndex) {
-    let newSizeEl = getSizeElement(sizeIndex, name)
-    debugger
+  selectSizeWithElement(newSizeEl) {
+    this.size = sizeMap[sizeMap[size.classList[1].replace('size-', '')]]
+
+    this.setSize(newSizeEl)
+  }
+
+  // Private
+  setSize(newSizeEl) {
     newSizeEl.classList.toggle('selected')
     if (this.sizeEl) {
       this.sizeEl.classList.toggle('selected')
@@ -51,27 +65,39 @@ export class Stroker extends Tool {
 }
 
 export class Marker extends Stroker {
-  constructor(color, sizeIndex) {
+  constructor(color, sizeIndex, splatter) {
     super('marker', getToolElement('marker'), color, sizeIndex)
+    this.splatter = splatter
+    this.splatter.setBackgroundColor(color)
   }
 
-  selectColor(colorEl, splatter) {
+  selectColorWithElement(colorEl) {
     const previousColor = this.color
     this.color = colorMap[colorEl.classList[1]]
+    this.configureSplatter(previousColor)
+  }
+
+  selectColorWithName(color) {
+    const previousColor = this.color
+    this.color = colorMap[color]
+    this.configureSplatter(previousColor)
+  }
+
+  // Private
+  configureSplatter(previousColor) {
+    this.splatter.setBackgroundColor(this.color)
 
     // Toggle the border around the black splatter
     if ((this.color === '#151515' || previousColor === '#151515')
       && previousColor !== this.color) {
-      splatter.toggle()
+      this.splatter.toggle()
     }
-
-    splatter.setBackgroundColor(this.color)
   }
 }
 
 export class Eraser extends Stroker {
-  constructor(color, size) {
-    super('eraser', getToolElement('eraser'), '#fff', size, sizeEl)
+  constructor(size) {
+    super('eraser', getToolElement('eraser'), '#fff', size)
   }
 }
 
@@ -96,26 +122,68 @@ export class Splatter extends PaletteTool {
     super('splatter', palette)
   }
   setBackgroundColor(color) {
-    this.el.setAttribute("style", `background-color: ${this.color}`)
+    this.el.setAttribute("style", `background-color: ${color}`)
   }
 }
 
 export class Palette {
-  constructor(name, selectChild) {
+  constructor(name, selectChild, toggleable) {
     this.name = name
     this.el = getPaletteElement(name)
     this.children = Array.prototype.slice.call(this.el.children)
     this.addListeners(selectChild)
+    this.toggleable = toggleable
   }
   toggle() {
+    if (!this.toggleable) return
     this.el.classList.toggle('open-palette')
   }
   addListeners(selectChild) {
     this.children.forEach(function(child) {
-        child.addEventListener('mousedown', function (e) {
+      child.addEventListener('mousedown', function (e) {
         selectChild(child)
         this.toggle()
       })
     })
+  }
+}
+
+export class Canvas {
+  constructor() {
+    this.tools = {}
+    this.selectedTool = null
+  }
+  selectToolWithElement(newToolEl) {
+    const name = newToolEl.classList[1]
+    debugger
+    this.selectToolWithName(name)
+  }
+  selectToolWithName(name) {
+    const newTool = this.tools[name]
+    if (!newTool) {
+      console.error('This tool has not yet been added to the canvas')
+      return
+    }
+    this.setTool(newTool)
+  }
+  addTool(tool) {
+    this.tools = Object.assign({ [tool.name]: tool }, this.tools)
+  }
+  addTools(tools) {
+    debugger
+    tools.forEach((tool) => {
+      this.addTool(tool)
+    })
+  }
+
+  // Private
+  setTool(newTool) {
+    if (newTool !== this.selectedTool) {
+      newTool.toggle()
+      if (this.selectedTool) {
+        this.selectedTool.toggle()
+      }
+      this.selectedTool = newTool
+    } // Else set selected tool to null
   }
 }

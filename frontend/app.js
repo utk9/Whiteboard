@@ -1,20 +1,33 @@
-import { Marker } from './toolClasses.js'
+import {
+  Marker,
+  Splatter,
+  Canvas,
+  Palette,
+  Eraser,
+} from './toolClasses.js'
 import {
   splatter,
   getToolElement,
   getPaletteElement,
   getSizeElement
 } from './domNodes.js'
-
 import {
   colorMap,
   sizeMap,
 } from './maps.js'
 
 document.addEventListener('DOMContentLoaded', function() {
-  let marker = new Marker('gray', 5)
+  let canvas = new Canvas()
+  let splatter = new Splatter()
 
-  marker.selectSize(6)
+  let marker = new Marker('gray', 5, splatter)
+  let eraser = new Eraser(5)
+
+  canvas.addTools([marker, eraser])
+  canvas.setTool(marker)
+
+  let toolPalette = new Palette('tool', canvas.selectToolWithElement)
+
  // // Drawing functionality
  //  canvas.addEventListener('mousemove', function (e) {
  //    draw('move', e);

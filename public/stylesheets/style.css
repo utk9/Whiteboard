@@ -172,6 +172,7 @@
   left: 0;
   right: 0;
   bottom: 0;
+  display: none; /*REMOVE!!*/
 }
 
 .loading-icon {
@@ -180,7 +181,6 @@
   position: absolute;
   top: 50%;
   left: 50%;
-  display: none; /*REMOVE!!*/
 }
 
 .loading-icon h3 {
