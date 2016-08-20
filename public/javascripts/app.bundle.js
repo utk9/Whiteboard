@@ -48,14 +48,9 @@
 
 	var _toolClasses = __webpack_require__(1);
 
-	var _domNodes = __webpack_require__(2);
-
-	var _maps = __webpack_require__(3);
-
 	document.addEventListener('DOMContentLoaded', function () {
-	  var canvas = new _toolClasses.Canvas();
-
-	  debugger;
+	  var toolPalette = new _toolClasses.ToolPalette();
+	  toolPalette.initialize();
 	});
 
 /***/ },
@@ -67,7 +62,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Canvas = exports.Palette = exports.Splatter = exports.PaletteTool = exports.Eraser = exports.Marker = exports.Stroker = exports.Tool = undefined;
+	exports.ToolPalette = exports.Palette = exports.Dots = exports.Splatter = exports.PaletteTool = exports.Eraser = exports.Marker = exports.Stroker = exports.Tool = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -209,21 +204,29 @@
 	var PaletteTool = exports.PaletteTool = function (_Tool2) {
 	  _inherits(PaletteTool, _Tool2);
 
-	  function PaletteTool(name, palette) {
+	  function PaletteTool(name) {
 	    _classCallCheck(this, PaletteTool);
 
 	    var el = (0, _domNodes.getToolElement)(name);
 
 	    var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(PaletteTool).call(this, name, el));
 
-	    _this4.palette = palette;
 	    _this4.togglePalette = _this4.togglePalette.bind(_this4);
 	    return _this4;
 	  }
 
 	  _createClass(PaletteTool, [{
+	    key: 'setPalette',
+	    value: function setPalette(palette) {
+	      this.palette = palette;
+	    }
+	  }, {
 	    key: 'togglePalette',
 	    value: function togglePalette(currentPalette) {
+	      if (!this.palette) {
+	        console.error('This tool has no palette yet');
+	        return;
+	      }
 	      this.palette.toggle();
 	      if (currentPalette !== this.palette) {
 	        currentPalette.toggle();
@@ -237,10 +240,10 @@
 	var Splatter = exports.Splatter = function (_PaletteTool) {
 	  _inherits(Splatter, _PaletteTool);
 
-	  function Splatter(palette) {
+	  function Splatter() {
 	    _classCallCheck(this, Splatter);
 
-	    var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(Splatter).call(this, 'splatter', palette));
+	    var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(Splatter).call(this, 'splatter'));
 
 	    _this5.setBackgroundColor = _this5.setBackgroundColor.bind(_this5);
 	    return _this5;
@@ -248,13 +251,8 @@
 
 	  _createClass(Splatter, [{
 	    key: 'setBackgroundColor',
-	    value: function setBackgroundColor(color) {
+	    value: function setBackgroundColor(previousColor, color) {
 	      this.el.setAttribute("style", 'background-color: ' + color);
-	    }
-	  }, {
-	    key: 'configureSplatter',
-	    value: function configureSplatter(previousColor) {
-	      this.setBackgroundColor(this.color);
 
 	      // Toggle the border around the black splatter
 	      if ((this.color === '#151515' || previousColor === '#151515') && previousColor !== this.color) {
@@ -266,16 +264,26 @@
 	  return Splatter;
 	}(PaletteTool);
 
+	var Dots = exports.Dots = function (_PaletteTool2) {
+	  _inherits(Dots, _PaletteTool2);
+
+	  function Dots() {
+	    _classCallCheck(this, Dots);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Dots).call(this, 'dots'));
+	  }
+
+	  return Dots;
+	}(PaletteTool);
+
 	var Palette = exports.Palette = function () {
-	  function Palette(name, selectChild, callback) {
-	    var toggleable = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
+	  function Palette(name) {
+	    var toggleable = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
 	    _classCallCheck(this, Palette);
 
 	    this.name = name;
 	    this.el = (0, _domNodes.getPaletteElement)(name);
-	    this.children = Array.prototype.slice.call(this.el.children);
-	    this.addListeners(selectChild, callback);
 	    this.toggleable = toggleable;
 
 	    this.toggle = this.toggle.bind(this);
@@ -290,13 +298,14 @@
 	    }
 	  }, {
 	    key: 'addListeners',
-	    value: function addListeners(selectChild, callback) {
-	      var _this6 = this;
+	    value: function addListeners(selectChild) {
+	      var _this7 = this;
 
-	      this.children.forEach(function (child) {
+	      var children = Array.prototype.slice.call(this.el.children);
+	      children.forEach(function (child) {
 	        child.addEventListener('mousedown', function (e) {
-	          selectChild(child, callback);
-	          _this6.toggle();
+	          selectChild(child);
+	          _this7.toggle();
 	        });
 	      });
 	    }
@@ -305,24 +314,68 @@
 	  return Palette;
 	}();
 
-	var Canvas = exports.Canvas = function () {
-	  function Canvas() {
-	    _classCallCheck(this, Canvas);
+	var ToolPalette = exports.ToolPalette = function (_Palette) {
+	  _inherits(ToolPalette, _Palette);
 
-	    this.tools = {};
-	    this.selectedTool = null;
+	  function ToolPalette() {
+	    _classCallCheck(this, ToolPalette);
 
-	    // Add all tools
-	    this.addTool(new Marker('gray', 6));
+	    var _this8 = _possibleConstructorReturn(this, Object.getPrototypeOf(ToolPalette).call(this, 'tool', false));
 
-	    this.selectToolByElement = this.selectToolByElement.bind(this);
-	    this.selectToolByName = this.selectToolByName.bind(this);
-	    this.addTool = this.addTool.bind(this);
-	    this.addTools = this.addTools.bind(this);
-	    this.setTool = this.setTool.bind(this);
+	    _this8.tools = {};
+	    _this8.palettes = {};
+	    _this8.selectedTool = null;
+
+	    // Bind all functions
+	    _this8.selectToolByElement = _this8.selectToolByElement.bind(_this8);
+	    _this8.selectToolByName = _this8.selectToolByName.bind(_this8);
+
+	    _this8.addPalette = _this8.addPalette.bind(_this8);
+	    _this8.addTool = _this8.addTool.bind(_this8);
+	    _this8.setTool = _this8.setTool.bind(_this8);
+	    return _this8;
 	  }
 
-	  _createClass(Canvas, [{
+	  _createClass(ToolPalette, [{
+	    key: 'initialize',
+	    value: function initialize() {
+
+	      this.addListeners(this.selectToolByElement);
+
+	      // Add all tools
+	      this.addTool(new Splatter());
+	      this.addTool(new Marker('gray', 6));
+	      this.addTool(new Eraser(6));
+
+	      var _tools = this.tools;
+	      var splatter = _tools.splatter;
+	      var marker = _tools.marker;
+	      var eraser = _tools.eraser;
+
+	      // Add all palettes
+
+	      this.addPalette(new Palette('color'));
+	      this.addPalette(new Palette('marker-size'));
+	      this.addPalette(new Palette('eraser-size'));
+
+	      debugger;
+
+	      var _palettes = this.palettes;
+	      var colorPalette = _palettes.colorPalette;
+	      var markerSizePalette = _palettes.markerSizePalette;
+	      var eraserSizePalette = _palettes.eraserSizePalette;
+
+
+	      colorPalette.addListeners(marker.selectColorByElement);
+	      markerSizePalette.addListeners(marker.selectSizeByElement);
+	      eraserSizePalette.addListeners(eraser.selectSizeByElement);
+
+	      // Set palettes
+	      splatter.setPalette(colorPalette);
+
+	      this.selectToolByName('marker');
+	    }
+	  }, {
 	    key: 'selectToolByElement',
 	    value: function selectToolByElement(newToolEl) {
 	      var name = newToolEl.classList[1];
@@ -344,13 +397,9 @@
 	      this.tools = Object.assign(_defineProperty({}, tool.name, tool), this.tools);
 	    }
 	  }, {
-	    key: 'addTools',
-	    value: function addTools(tools) {
-	      var _this7 = this;
-
-	      tools.forEach(function (tool) {
-	        _this7.addTool(tool);
-	      });
+	    key: 'addPalette',
+	    value: function addPalette(palette) {
+	      this.palettes = Object.assign(_defineProperty({}, getPaletteName(palette.name), palette), this.palettes);
 	    }
 	  }, {
 	    key: 'setTool',
@@ -365,8 +414,17 @@
 	    }
 	  }]);
 
-	  return Canvas;
-	}();
+	  return ToolPalette;
+	}(Palette);
+
+	function getPaletteName(str) {
+	  var dashIndex = str.indexOf('-');
+
+	  if (dashIndex > -1) {
+	    return str.substring(0, dashIndex) + str.charAt(dashIndex + 1).toUpperCase() + str.substring(dashIndex + 2) + 'Palette';
+	  }
+	  return str + 'Palette';
+	}
 
 /***/ },
 /* 2 */
@@ -377,12 +435,11 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.loadingOverlay = exports.board = exports.canvas = undefined;
+	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.loadingOverlay = exports.board = exports.canvas = exports.toolList = undefined;
 
 	var _maps = __webpack_require__(3);
 
-	var toolPalette = document.querySelector('.tool-palette');
-
+	var toolList = exports.toolList = document.querySelector('.tool-palette');
 	var canvas = exports.canvas = document.getElementById('canvas-main');
 	var board = exports.board = document.querySelector('.board');
 	var loadingOverlay = exports.loadingOverlay = document.querySelector('.loading-overlay');
@@ -412,7 +469,7 @@
 	var getToolElement = exports.getToolElement = function getToolElement(name) {
 	  var displayed = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-	  return displayed ? toolPalette.querySelector('.' + name + '.display') : toolPalette.querySelector('.' + name + '.no-display');
+	  return displayed ? toolList.querySelector('.' + name + '.display') : toolList.querySelector('.' + name + '.no-display');
 	};
 
 /***/ },
