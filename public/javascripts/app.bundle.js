@@ -55,35 +55,7 @@
 	document.addEventListener('DOMContentLoaded', function () {
 	  var canvas = new _toolClasses.Canvas();
 
-	  var toolPalette = new _toolClasses.Palette('tool', canvas.selectToolByElement, false);
-	  var colorPalette = new _toolClasses.Palette('color', marker.selectColorByElement);
-	  var markerSizePalette = new _toolClasses.Palette('marker-size', marker.selectSizeByElement);
-	  var eraserSizePalette = new _toolClasses.Palette('eraser-size', eraser.selectSizeByElement);
-
-	  var splatter = new _toolClasses.Splatter(colorPalette);
-
-	  var marker = new _toolClasses.Marker('gray', 5, splatter);
-	  var eraser = new _toolClasses.Eraser(5);
-
-	  canvas.addTools([marker, eraser]);
-	  canvas.setTool(marker);
-
-	  // // Drawing functionality
-	  //  canvas.addEventListener('mousemove', function (e) {
-	  //    draw('move', e);
-	  //  }, false);
-
-	  //  canvas.addEventListener('mousedown', function (e) {
-	  //    draw('down', e);
-	  //  }, false);
-
-	  //  canvas.addEventListener('mouseup', function (e) {
-	  //    draw('up', e);
-	  //  }, false);
-
-	  //  canvas.addEventListener('mouseout', function (e) {
-	  //    draw('out', e);
-	  //  }, false);
+	  debugger;
 	});
 
 /***/ },
@@ -195,13 +167,10 @@
 	var Marker = exports.Marker = function (_Stroker) {
 	  _inherits(Marker, _Stroker);
 
-	  function Marker(color, sizeIndex, splatter) {
+	  function Marker(color, sizeIndex) {
 	    _classCallCheck(this, Marker);
 
 	    var _this2 = _possibleConstructorReturn(this, Object.getPrototypeOf(Marker).call(this, 'marker', (0, _domNodes.getToolElement)('marker'), color, sizeIndex));
-
-	    _this2.splatter = splatter;
-	    _this2.splatter.setBackgroundColor(color);
 
 	    _this2.selectSizeByElement = _this2.selectSizeByElement.bind(_this2);
 	    _this2.selectColorByName = _this2.selectColorByName.bind(_this2);
@@ -213,27 +182,12 @@
 	    value: function selectColorByElement(colorEl) {
 	      var previousColor = this.color;
 	      this.color = _maps.colorMap[colorEl.classList[1]];
-	      this._configureSplatter(previousColor);
 	    }
 	  }, {
 	    key: 'selectColorByName',
 	    value: function selectColorByName(color) {
 	      var previousColor = this.color;
 	      this.color = _maps.colorMap[color];
-	      this._configureSplatter(previousColor);
-	    }
-
-	    // Private
-
-	  }, {
-	    key: '_configureSplatter',
-	    value: function _configureSplatter(previousColor) {
-	      this.splatter.setBackgroundColor(this.color);
-
-	      // Toggle the border around the black splatter
-	      if ((this.color === '#151515' || previousColor === '#151515') && previousColor !== this.color) {
-	        this.splatter.toggle();
-	      }
 	    }
 	  }]);
 
@@ -297,21 +251,31 @@
 	    value: function setBackgroundColor(color) {
 	      this.el.setAttribute("style", 'background-color: ' + color);
 	    }
+	  }, {
+	    key: 'configureSplatter',
+	    value: function configureSplatter(previousColor) {
+	      this.setBackgroundColor(this.color);
+
+	      // Toggle the border around the black splatter
+	      if ((this.color === '#151515' || previousColor === '#151515') && previousColor !== this.color) {
+	        this.toggle();
+	      }
+	    }
 	  }]);
 
 	  return Splatter;
 	}(PaletteTool);
 
 	var Palette = exports.Palette = function () {
-	  function Palette(name, selectChild) {
-	    var toggleable = arguments.length <= 2 || arguments[2] === undefined ? true : arguments[2];
+	  function Palette(name, selectChild, callback) {
+	    var toggleable = arguments.length <= 3 || arguments[3] === undefined ? true : arguments[3];
 
 	    _classCallCheck(this, Palette);
 
 	    this.name = name;
 	    this.el = (0, _domNodes.getPaletteElement)(name);
 	    this.children = Array.prototype.slice.call(this.el.children);
-	    this.addListeners(selectChild);
+	    this.addListeners(selectChild, callback);
 	    this.toggleable = toggleable;
 
 	    this.toggle = this.toggle.bind(this);
@@ -326,12 +290,12 @@
 	    }
 	  }, {
 	    key: 'addListeners',
-	    value: function addListeners(selectChild) {
+	    value: function addListeners(selectChild, callback) {
 	      var _this6 = this;
 
 	      this.children.forEach(function (child) {
 	        child.addEventListener('mousedown', function (e) {
-	          selectChild(child);
+	          selectChild(child, callback);
 	          _this6.toggle();
 	        });
 	      });
@@ -347,6 +311,9 @@
 
 	    this.tools = {};
 	    this.selectedTool = null;
+
+	    // Add all tools
+	    this.addTool(new Marker('gray', 6));
 
 	    this.selectToolByElement = this.selectToolByElement.bind(this);
 	    this.selectToolByName = this.selectToolByName.bind(this);
@@ -407,62 +374,45 @@
 
 	'use strict';
 
-	var colorMap = __webpack_require__(3).colorMap;
-	var sizeMap = __webpack_require__(3).sizeMap;
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.loadingOverlay = exports.board = exports.canvas = undefined;
 
-	var canvas = document.getElementById('canvas-main');
-	var board = document.querySelector('.board');
+	var _maps = __webpack_require__(3);
 
-	var toolList = document.querySelector('.tool-palette');
+	var toolPalette = document.querySelector('.tool-palette');
 
-	var splatter = document.querySelector('.splatter');
-	var splatterOutline = document.querySelector('.splatter-outline');
-	var colorPalette = document.querySelector('.color-palette');
+	var canvas = exports.canvas = document.getElementById('canvas-main');
+	var board = exports.board = document.querySelector('.board');
+	var loadingOverlay = exports.loadingOverlay = document.querySelector('.loading-overlay');
 
-	var size = document.querySelector('.size');
-	var markerSizePalette = document.querySelector('.marker-size-palette');
-	var eraserSizePalette = document.querySelector('.eraser-size-palette');
-
-	var loadingOverlay = document.querySelector('.loading-overlay');
-
-	var getPaletteElement = function getPaletteElement(name) {
+	var getPaletteElement = exports.getPaletteElement = function getPaletteElement(name) {
 	  return document.querySelector('.' + name + '-palette');
 	};
 
-	var getSizeElement = function getSizeElement(index, name) {
+	var getSizeElement = exports.getSizeElement = function getSizeElement(index, name) {
 	  if (name === 'marker') {
+	    var markerSizePalette = getPaletteElement('marker-size');
 	    return markerSizePalette.querySelector('.size-circle.size-' + index);
 	  }
 	  if (name === 'eraser') {
+	    var eraserSizePalette = getPaletteElement('eraser-size');
 	    return eraserSizePalette.querySelector('.size-circle.size-' + index);
 	  }
+
+	  console.error('[' + name + '] is not a valid tool for getting a size element');
 	};
 
-	var getColorElement = function getColorElement(color) {
+	var getColorElement = exports.getColorElement = function getColorElement(color) {
+	  var colorPalette = getPaletteElement('color');
 	  return colorPalette.querySelector('.color-box.' + color);
 	};
 
-	var getToolElement = function getToolElement(name) {
+	var getToolElement = exports.getToolElement = function getToolElement(name) {
 	  var displayed = arguments.length <= 1 || arguments[1] === undefined ? true : arguments[1];
 
-	  return displayed ? toolList.querySelector('.' + name + '.display') : toolList.querySelector('.' + name + '.no-display');
-	};
-
-	module.exports = {
-	  canvas: canvas,
-	  board: board,
-	  toolList: toolList,
-	  splatter: splatter,
-	  splatterOutline: splatterOutline,
-	  colorPalette: colorPalette,
-	  size: size,
-	  getSizeElement: getSizeElement,
-	  getColorElement: getColorElement,
-	  getToolElement: getToolElement,
-	  getPaletteElement: getPaletteElement,
-	  markerSizePalette: markerSizePalette,
-	  eraserSizePalette: eraserSizePalette,
-	  loadingOverlay: loadingOverlay
+	  return displayed ? toolPalette.querySelector('.' + name + '.display') : toolPalette.querySelector('.' + name + '.no-display');
 	};
 
 /***/ },
