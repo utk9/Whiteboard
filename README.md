@@ -4,12 +4,12 @@ Whiteboard is a webapp build to provide an easy interface to collaborate on draw
 
 ##To run
 
-#Install dependencies
+###Install dependencies
 `npm install`
 
-#Run mongodb
+###Run mongodb
 On Mac OS: `mongod`
 On Linux: `mongodb`
 
-#Run app
+###Run app
 `npm start`
