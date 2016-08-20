@@ -70,25 +70,21 @@ export class Stroker extends Tool {
 }
 
 export class Marker extends Stroker {
-  constructor(color, sizeIndex, splatter) {
+  constructor(color, sizeIndex) {
     super('marker', getToolElement('marker'), color, sizeIndex)
-    this.splatter = splatter
-    this.splatter.setBackgroundColor(color)
 
     this.selectSizeByElement = this.selectSizeByElement.bind(this)
     this.selectColorByName = this.selectColorByName.bind(this)
   }
 
-  selectColorByElement(colorEl, configureSplatter) {
+  selectColorByElement(colorEl) {
     const previousColor = this.color
     this.color = colorMap[colorEl.classList[1]]
-    this.configureSplatter(previousColor)
   }
 
-  selectColorByName(color, configureSplatter) {
+  selectColorByName(color) {
     const previousColor = this.color
     this.color = colorMap[color]
-    this.configureSplatter(previousColor)
   }
 }
 
@@ -106,6 +102,7 @@ export class PaletteTool extends Tool {
     this.palette = palette
     this.togglePalette = this.togglePalette.bind(this)
   }
+
   togglePalette(currentPalette) {
     this.palette.toggle()
     if (currentPalette !== this.palette) {
@@ -119,9 +116,11 @@ export class Splatter extends PaletteTool {
     super('splatter', palette)
     this.setBackgroundColor = this.setBackgroundColor.bind(this)
   }
+
   setBackgroundColor(color) {
     this.el.setAttribute("style", `background-color: ${color}`)
   }
+
   configureSplatter(previousColor) {
     this.setBackgroundColor(this.color)
 
@@ -134,24 +133,26 @@ export class Splatter extends PaletteTool {
 }
 
 export class Palette {
-  constructor(name, selectChild, toggleable=true) {
+  constructor(name, selectChild, callback, toggleable=true) {
     this.name = name
     this.el = getPaletteElement(name)
     this.children = Array.prototype.slice.call(this.el.children)
-    this.addListeners(selectChild)
+    this.addListeners(selectChild, callback)
     this.toggleable = toggleable
 
     this.toggle = this.toggle.bind(this)
     this.addListeners = this.addListeners.bind(this)
   }
+
   toggle() {
     if (!this.toggleable) return
     this.el.classList.toggle('open-palette')
   }
-  addListeners(selectChild, cb) {
+
+  addListeners(selectChild, callback) {
     this.children.forEach((child) => {
       child.addEventListener('mousedown', (e) => {
-        selectChild(child, cb)
+        selectChild(child, callback)
         this.toggle()
       })
     })
@@ -163,16 +164,22 @@ export class Canvas {
     this.tools = {}
     this.selectedTool = null
 
+    // Add all tools
+    this.addTool(new Marker('gray', 6))
+    this.addTool(new Splatter())
+
     this.selectToolByElement = this.selectToolByElement.bind(this)
     this.selectToolByName = this.selectToolByName.bind(this)
     this.addTool = this.addTool.bind(this)
     this.addTools = this.addTools.bind(this)
     this.setTool = this.setTool.bind(this)
   }
+
   selectToolByElement(newToolEl) {
     const name = newToolEl.classList[1]
     this.selectToolByName(name)
   }
+
   selectToolByName(name) {
     const newTool = this.tools[name]
     if (!newTool) {
@@ -181,14 +188,17 @@ export class Canvas {
     }
     this.setTool(newTool)
   }
+
   addTool(tool) {
     this.tools = Object.assign({ [tool.name]: tool }, this.tools)
   }
+
   addTools(tools) {
     tools.forEach((tool) => {
       this.addTool(tool)
     })
   }
+
   setTool(newTool) {
     if (newTool !== this.selectedTool) {
       newTool.toggle()
