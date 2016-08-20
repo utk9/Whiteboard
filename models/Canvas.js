@@ -9,7 +9,7 @@ var canvasSchema = new mongoose.Schema({
 		height: Number,
 		strokes: Schema.Types.Mixed
 	}
-});
+}, { collection: 'canvases' });
 
 var Canvas = mongoose.model('Canvas', canvasSchema);
 
