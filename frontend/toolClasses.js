@@ -95,15 +95,22 @@ export class Eraser extends Stroker {
 }
 
 export class PaletteTool extends Tool {
-  constructor(name, palette) {
+  constructor(name) {
     const el = getToolElement(name)
     super(name, el)
 
-    this.palette = palette
     this.togglePalette = this.togglePalette.bind(this)
   }
 
+  setPalette(palette) {
+    this.palette = palette
+  }
+
   togglePalette(currentPalette) {
+    if (!this.palette) {
+      console.error('This tool has no palette yet')
+      return
+    }
     this.palette.toggle()
     if (currentPalette !== this.palette) {
       currentPalette.toggle()
@@ -112,17 +119,14 @@ export class PaletteTool extends Tool {
 }
 
 export class Splatter extends PaletteTool {
-  constructor(palette) {
-    super('splatter', palette)
+  constructor() {
+    super('splatter')
+
     this.setBackgroundColor = this.setBackgroundColor.bind(this)
   }
 
-  setBackgroundColor(color) {
+  setBackgroundColor(previousColor, color) {
     this.el.setAttribute("style", `background-color: ${color}`)
-  }
-
-  configureSplatter(previousColor) {
-    this.setBackgroundColor(this.color)
 
     // Toggle the border around the black splatter
     if ((this.color === '#151515' || previousColor === '#151515')
@@ -132,12 +136,31 @@ export class Splatter extends PaletteTool {
   }
 }
 
+export class Dots extends PaletteTool {
+  constructor() {
+    super('dots')
+  }
+
+  setPalettes(palettes) {
+    this.palettes = palettes
+  }
+
+  togglePalette(currentPalette) {
+    if (!this.palette) {
+      console.error('This tool has no palette yet')
+      return
+    }
+    this.palette.toggle()
+    if (currentPalette !== this.palette) {
+      currentPalette.toggle()
+    }
+  }
+}
+
 export class Palette {
-  constructor(name, selectChild, callback, toggleable=true) {
+  constructor(name, toggleable=true) {
     this.name = name
     this.el = getPaletteElement(name)
-    this.children = Array.prototype.slice.call(this.el.children)
-    this.addListeners(selectChild, callback)
     this.toggleable = toggleable
 
     this.toggle = this.toggle.bind(this)
@@ -149,30 +172,68 @@ export class Palette {
     this.el.classList.toggle('open-palette')
   }
 
-  addListeners(selectChild, callback) {
-    this.children.forEach((child) => {
+  addListeners(selectChild) {
+    const children = Array.prototype.slice.call(this.el.children)
+    children.forEach((child) => {
       child.addEventListener('mousedown', (e) => {
-        selectChild(child, callback)
+        selectChild(child)
         this.toggle()
       })
     })
   }
 }
 
-export class Canvas {
+export class ToolPalette extends Palette {
   constructor() {
+    super('tool', false)
+
     this.tools = {}
+    this.palettes = {}
     this.selectedTool = null
 
-    // Add all tools
-    this.addTool(new Marker('gray', 6))
-    this.addTool(new Splatter())
-
+    // Bind all functions
     this.selectToolByElement = this.selectToolByElement.bind(this)
     this.selectToolByName = this.selectToolByName.bind(this)
+
+    this.addPalette = this.addPalette.bind(this)
     this.addTool = this.addTool.bind(this)
-    this.addTools = this.addTools.bind(this)
     this.setTool = this.setTool.bind(this)
+  }
+
+  initialize() {
+
+    this.addListeners(this.selectToolByElement)
+
+    // Add all tools
+    this.addTool(new Splatter())
+    this.addTool(new Marker('gray', 6))
+    this.addTool(new Eraser(6))
+
+    const {
+      splatter,
+      marker,
+      eraser,
+    } = this.tools
+
+    // Add all palettes
+    this.addPalette(new Palette('color'))
+    this.addPalette(new Palette('marker-size'))
+    this.addPalette(new Palette('eraser-size'))
+
+    const {
+      colorPalette,
+      markerSizePalette,
+      eraserSizePalette,
+    } = this.palettes
+
+    colorPalette.addListeners(marker.selectColorByElement)
+    markerSizePalette.addListeners(marker.selectSizeByElement)
+    eraserSizePalette.addListeners(eraser.selectSizeByElement)
+
+    // Set palettes
+    splatter.setPalette(colorPalette)
+
+    this.selectToolByName('marker')
   }
 
   selectToolByElement(newToolEl) {
@@ -193,10 +254,21 @@ export class Canvas {
     this.tools = Object.assign({ [tool.name]: tool }, this.tools)
   }
 
-  addTools(tools) {
-    tools.forEach((tool) => {
-      this.addTool(tool)
-    })
+  addPalette(palette) {
+    this.palettes = Object.assign({ [getPaletteName(palette.name)]: palette }, this.palettes)
+  }
+
+  // Private
+  getPaletteName(str) {
+    const dashIndex = str.indexOf('-')
+
+    if (dashIndex > -1) {
+      return str.substring(0, dashIndex)
+        + str.charAt(dashIndex + 1).toUpperCase()
+        + str.substring(dashIndex + 2)
+        + 'Palette'
+    }
+    return str + 'Palette'
   }
 
   setTool(newTool) {

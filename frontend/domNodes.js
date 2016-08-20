@@ -3,8 +3,7 @@ import {
   sizeMap,
 } from './maps.js'
 
-const toolPalette = document.querySelector('.tool-palette')
-
+export const toolList = document.querySelector('.tool-palette')
 export const canvas = document.getElementById('canvas-main')
 export const board = document.querySelector('.board');
 export const loadingOverlay = document.querySelector('.loading-overlay')
@@ -33,6 +32,6 @@ export const getColorElement = function (color) {
 
 export const getToolElement = function (name, displayed=true) {
   return displayed ?
-    toolPalette.querySelector(`.${name}.display`) :
-    toolPalette.querySelector(`.${name}.no-display`)
+    toolList.querySelector(`.${name}.display`) :
+    toolList.querySelector(`.${name}.no-display`)
 }
