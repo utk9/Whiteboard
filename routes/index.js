@@ -1,5 +1,5 @@
 var express = require('express');
-var monsoose = require('mongoose');
+var mongoose = require('mongoose');
 var router = express.Router();
 
 var Canvas = require('../models/Canvas.js');
@@ -15,6 +15,7 @@ db.on('open', function () {
 	console.log("Connected to DB");
 });
 
+var returnRouter = function (io) {
 //Routes ======================================================
 router.get('/', function(req, res, next) {
   res.render('index');
@@ -93,6 +94,43 @@ router.get('/api/canvas/:name', function(req, res) {
 });
 
 //IO =========================================================
+io.on("connection", function (socket) {
+  socket.on("new_user", function (canvasData) {
+    db.canvases.findOne({name: canvasData.canvasInfo.name}, function (err, canvas){
+      if (err) {
+        console.log(err);
+        //return error to user
+      } else {
+        if (canvas.pass) {
+          if (canvasData.pass) {
+            if (canvasData.pass == canvas.pass) {
+              socket.join(canvasData.name);
+              socket.emit("canvas_redraw", canvas.canvasInfo);
+            } else {
+              socket.emit("incorrect_password");
+            }
+          } else {
+            socket.emit("password_required");
+          }
+        } else {
+          socket.join("canvasData.name");
+          socket.emit("canvas_redraw", canvas.canvasInfo);
+        }
+
+      }
+    });
+  });
+
+  socket.on("new_stroke", function (data) {
+    socket.broadcast.to(data.canvasName).emit("canvas_update", data);
+    Canvas.update({name: data.canvasName}, { $push: {'canvasInfo.strokes': data.points}}, function (err){
+      if (err) {
+        console.log(err);
+        //send error to client
+      }
+    });
+  });
+});
 
 
 //whiteboard route
@@ -107,6 +145,9 @@ router.get('/:name', function(req, res) {
 
 });
 
+return router;
+
+}
 
 
-module.exports = router;
+module.exports = returnRouter;

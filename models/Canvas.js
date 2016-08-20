@@ -1,4 +1,4 @@
-vav mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 var canvasSchema = new mongoose.Schema({
 	name: String,
@@ -7,7 +7,7 @@ var canvasSchema = new mongoose.Schema({
 		name: String,
 		width: Number,
 		height: Number,
-		strokes: Schema.Types.Mixed
+		strokes: mongoose.Schema.Types.Mixed
 	}
 }, { collection: 'canvases' });
 

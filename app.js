@@ -5,14 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-var Canvas = require('./data/canvasData.js').Canvas;
-var canvasMap = require('./data/canvasData.js').canvasMap;
+var routes = require('./routes/index')(io);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -77,44 +74,6 @@ io.on("connection", function(socket){
   socket.on("new_stroke", function (data) {
     canvasMap[data.canvasName].canvasInfo.strokes.push(data.points);
     socket.broadcast.to(data.canvasName).emit ("canvas_update", data);
-  });
-});
-
-io.on("connection", function (socket) {
-  socket.on("new_user", function (canvasData) {
-    db.canvases.findOne({name: canvasData.canvasInfo.name}, function (err, canvas){
-      if (err) {
-        console.log(err);
-        //return error to user
-      } else {
-        if (canvas.pass) {
-          if (canvasData.pass) {
-            if (canvasData.pass == canvas.pass) {
-              socket.join(canvasData.name);
-              socket.emit("canvas_redraw", canvas.canvasInfo);
-            } else {
-              socket.emit("incorrect_password");
-            }
-          } else {
-            socket.emit("password_required");
-          }
-        } else {
-          socket.join("canvasData.name");
-          socket.emit("canvas_redraw", canvas.canvasInfo);
-        }
-
-      }
-    });
-  });
-
-  socket.on("new_stroke", function (data) {
-    socket.broadcast.to(data.canvasName).emit("canvas_update", data); { $push: { scores: 89 } }
-    Canvas.update({name: data.canvasName}, { $push: {'canvasInfo.strokes': data.points}}, function (err){
-      if (err) {
-        console.log(err);
-        //send error to client
-      }
-    });
   });
 });
 
