@@ -34,33 +34,35 @@ router.post('/api/canvas', function (req, res) {
 	var name = req.body.name;
 	var pass = req.body.pass ? req.body.pass : null;
 
-	if (db.canvases.find({'name': name}).limit(1).size()) {
-		res.status(403).json({
-			success: false,
-			reason: "This name already exists."
-		});
-	} else {
-		Canvas.create({
-			name: name,
-			password: pass,
-			canvasInfo: {
+	Canvas.count({'name': name}, function (err, count) {
+		if (count) {
+			res.status(403).json({
+				success: false,
+				reason: "This name already exists."
+			});
+		} else {
+			Canvas.create({
 				name: name,
-				width: 900,
-				height: 700,
-				strokes: []
-			}
-		}, function (err, canvas) {
-			if (err) {
-				console.log(err);
-			} else {
-				//send over canvas as jsonc
-			}
-		});
-		res.json({
-			success: true,
-			name: name
-		});
-	}
+				password: pass,
+				canvasInfo: {
+					name: name,
+					width: 900,
+					height: 700,
+					strokes: []
+				}
+			}, function (err, canvas) {
+				if (err) {
+					console.log(err);
+				} else {
+					//send over canvas as jsonc
+				}
+			});
+			res.json({
+				success: true,
+				name: name
+			});
+		}
+	});
 });
 
 router.get('/api/canvas', function(req, res) {
@@ -77,7 +79,7 @@ router.get('/api/canvas', function(req, res) {
 
 router.get('/api/canvas/:name', function(req, res) {
 	var name = req.params.name;
-	db.canvases.findOne({'name': name}, function(err, canvas) {
+	Canvas.findOne({'name': name}, function(err, canvas) {
 		if (err) {
 			console.log(err);
 			//send error to client
@@ -96,7 +98,7 @@ router.get('/api/canvas/:name', function(req, res) {
 //IO =========================================================
 io.on("connection", function (socket) {
   socket.on("new_user", function (canvasData) {
-    db.canvases.findOne({name: canvasData.canvasInfo.name}, function (err, canvas){
+    Canvas.findOne({name: canvasData.canvasInfo.name}, function (err, canvas){
       if (err) {
         console.log(err);
         //return error to user
@@ -104,7 +106,7 @@ io.on("connection", function (socket) {
         if (canvas.pass) {
           if (canvasData.pass) {
             if (canvasData.pass == canvas.pass) {
-              socket.join(canvasData.name);
+              socket.join(canvasData.canvasInfo.name);
               socket.emit("canvas_redraw", canvas.canvasInfo);
             } else {
               socket.emit("incorrect_password");
@@ -113,7 +115,7 @@ io.on("connection", function (socket) {
             socket.emit("password_required");
           }
         } else {
-          socket.join("canvasData.name");
+          socket.join(canvasData.canvasInfo.name);
           socket.emit("canvas_redraw", canvas.canvasInfo);
         }
 
@@ -136,7 +138,7 @@ io.on("connection", function (socket) {
 //whiteboard route
 router.get('/:name', function(req, res) {
 	var name = req.params.name;
-	if (db.canvases.find({'name': name}).limit(1).size()) {
+	if (Canvas.find({'name': name}).limit(1).size()) {
 		res.render('whiteboard');
 	} else {
 		res.status(404).render('error');

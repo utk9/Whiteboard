@@ -52,31 +52,6 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-io.on("connection", function(socket){
-  socket.on("new_user", function (canvasData) {
-    if (canvasMap[canvasData.canvasInfo.name].pass) {
-      if (canvasData.pass) {
-        if (canvasData.pass == canvasMap[canvasData.canvasInfo.name].pass) {
-          socket.join(canvasData.name);
-          socket.emit("canvas_redraw", canvasMap[canvasData.canvasInfo.name].canvasInfo);
-        } else {
-          socket.emit("incorrect_password");
-        }
-      } else {
-        socket.emit ("password_required");
-      }
-    } else {
-      socket.join(canvasData.name);
-      socket.emit("canvas_redraw", canvasMap[canvasData.canvasInfo.name].canvasInfo);
-    }
-  });
-
-  socket.on("new_stroke", function (data) {
-    canvasMap[data.canvasName].canvasInfo.strokes.push(data.points);
-    socket.broadcast.to(data.canvasName).emit ("canvas_update", data);
-  });
-});
-
 module.exports = {
   app: app,
   server: server

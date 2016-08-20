@@ -158,14 +158,26 @@
 	var ctx = canvas.getContext('2d');
 
 	var socket = io();
-	socket.emit("new_user", canvasData);
+	socket.emit("new_user", { canvasInfo: canvasData, pass: null });
 
 	socket.on("canvas_redraw", function (canvas) {
 	  console.log(canvas);
 	  loadingOverlay.classList.add("no-display");
 	});
 
+	socket.on("password_required", function () {
+	  //pop up modal and ask for password
+	  //emit "new_user" with non-null password this time
+	});
+
+	socket.on("incorrect_password", function () {
+	  //indicate that password supplied is incorrect
+	  //ask for passwrord
+	  //emit "new_user" with new non-null password
+	});
+
 	socket.on("canvas_update", function (data) {
+	  console.log("dsfsf");
 	  update(data.points[0], data.points[1], data.toolAttributes);
 	});
 
