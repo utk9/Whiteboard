@@ -1,9 +1,6 @@
 var express = require('express');
 var monsoose = require('mongoose');
 var router = express.Router();
-var Canvas = require('../data/canvasData.js').Canvas;
-var canvasMap = require('../data/canvasData.js').canvasMap;
-var CanvasInfo = require('../data/canvasData.js').CanvasInfo;
 
 var Canvas = require('../models/Canvas.js');
 
@@ -58,7 +55,6 @@ router.post('/api/canvas', function (req, res) {
 				//send over canvas as jsonc
 			}
 		});
-		//canvasMap[name] = new Canvas(name, pass, new CanvasInfo(name, 700, 900, []));
 		res.json({
 			success: true,
 			name: name

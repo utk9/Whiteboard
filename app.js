@@ -80,6 +80,44 @@ io.on("connection", function(socket){
   });
 });
 
+io.on("connection", function (socket) {
+  socket.on("new_user", function (canvasData) {
+    db.canvases.findOne({name: canvasData.canvasInfo.name}, function (err, canvas){
+      if (err) {
+        console.log(err);
+        //return error to user
+      } else {
+        if (canvas.pass) {
+          if (canvasData.pass) {
+            if (canvasData.pass == canvas.pass) {
+              socket.join(canvasData.name);
+              socket.emit("canvas_redraw", canvas.canvasInfo);
+            } else {
+              socket.emit("incorrect_password");
+            }
+          } else {
+            socket.emit("password_required");
+          }
+        } else {
+          socket.join("canvasData.name");
+          socket.emit("canvas_redraw", canvas.canvasInfo);
+        }
+
+      }
+    });
+  });
+
+  socket.on("new_stroke", function (data) {
+    socket.broadcast.to(data.canvasName).emit("canvas_update", data); { $push: { scores: 89 } }
+    Canvas.update({name: data.canvasName}, { $push: {'canvasInfo.strokes': data.points}}, function (err){
+      if (err) {
+        console.log(err);
+        //send error to client
+      }
+    });
+  });
+});
+
 module.exports = {
   app: app,
   server: server
