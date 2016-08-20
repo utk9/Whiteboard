@@ -18,6 +18,8 @@ socket.on("canvas_redraw", function (canvas) {
 });
 
 socket.on("password_required", function () {
+  var passModal = document.querySelector('.modal.fade')
+  passModal.modal('show')
   //pop up modal and ask for password
   //emit "new_user" with non-null password this time
 });
