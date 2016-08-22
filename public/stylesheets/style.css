@@ -16,10 +16,6 @@
   transition: background-color 300ms;
 }
 
-.no-display {
-  display: none;
-}
-
 #canvas-main {
   margin: 0;
   padding: 0;

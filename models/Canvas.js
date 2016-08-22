@@ -1,15 +1,15 @@
-vav mongoose = require('mongoose');
+var mongoose = require('mongoose');
 
 var canvasSchema = new mongoose.Schema({
 	name: String,
-	password: String,
+	pass: String,
 	canvasInfo: {
 		name: String,
 		width: Number,
 		height: Number,
-		strokes: Schema.Types.Mixed
+		strokes: mongoose.Schema.Types.Mixed
 	}
-});
+}, { collection: 'canvases' });
 
 var Canvas = mongoose.model('Canvas', canvasSchema);
 

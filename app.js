@@ -5,14 +5,11 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-
 var app = express();
 var server = require('http').Server(app);
 var io = require('socket.io')(server);
 
-var Canvas = require('./data/canvasData.js').Canvas;
-var canvasMap = require('./data/canvasData.js').canvasMap;
+var routes = require('./routes/index')(io);
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -53,18 +50,6 @@ app.use(function(err, req, res, next) {
    console.log(err);
   res.status(err.status || 500);
   res.render('error');
-});
-
-io.on("connection", function(socket){
-  socket.on("new_user", function (canvasData) {
-    socket.join(canvasData.name);
-    socket.emit("canvas_redraw", canvasMap[canvasData.name].canvasInfo);
-  });
-
-  socket.on("new_stroke", function (data) {
-    canvasMap[data.canvasName].canvasInfo.strokes.push(data.points);
-    socket.broadcast.to(data.canvasName).emit ("canvas_update", data);
-  });
 });
 
 module.exports = {
