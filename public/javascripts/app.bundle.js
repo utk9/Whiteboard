@@ -163,6 +163,11 @@
 	// Canvas password logic
 	var passModal = $("#password-modal");
 
+	passModal.modal({
+	  backdrop: 'static',
+	  keyboard: false
+	});
+
 	var submitButton = document.getElementById('password-submit');
 	var passwordInput = document.getElementById('password-input');
 	var errorSpan = document.getElementById('error');
@@ -184,7 +189,6 @@
 	});
 
 	socket.on("incorrect_password", function () {
-	  console.log(errorSpan);
 	  errorSpan.innerHTML = 'The password entered was incorrect';
 	});
 

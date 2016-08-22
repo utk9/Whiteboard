@@ -15,6 +15,11 @@ socket.emit("new_user", {canvasInfo: canvasData, pass: null});
 // Canvas password logic
 var passModal = $("#password-modal")
 
+passModal.modal({
+  backdrop: 'static',
+  keyboard: false
+})
+
 var submitButton = document.getElementById('password-submit')
 var passwordInput = document.getElementById('password-input')
 var errorSpan = document.getElementById('error')
