@@ -13,3 +13,11 @@
 .justify-center {
   justify-content: center;
 }
+
+.block-display {
+  display: block;
+}
+
+.no-display {
+  display: none;
+}

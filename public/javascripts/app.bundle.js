@@ -160,24 +160,40 @@
 	var socket = io();
 	socket.emit("new_user", { canvasInfo: canvasData, pass: null });
 
-	socket.on("canvas_redraw", function (canvas) {
-	  console.log(canvas);
-	  loadingOverlay.classList.add("no-display");
+	// Canvas password logic
+	var passModal = $("#password-modal");
+
+	var submitButton = document.getElementById('password-submit');
+	var passwordInput = document.getElementById('password-input');
+	var errorSpan = document.getElementById('error');
+
+	submitButton.addEventListener('click', function () {
+	  var password = passwordInput.value;
+	  if (!isBlank(password)) {
+	    socket.emit("new_user", { canvasInfo: canvasData, pass: password });
+	  } else {
+	    errorSpan.innerHTML = 'Please enter the password.';
+	  }
 	});
+	function isBlank(str) {
+	  return !str || str.trim() === '';
+	}
 
 	socket.on("password_required", function () {
-	  //pop up modal and ask for password
-	  //emit "new_user" with non-null password this time
+	  passModal.modal('show');
 	});
 
 	socket.on("incorrect_password", function () {
-	  //indicate that password supplied is incorrect
-	  //ask for passwrord
-	  //emit "new_user" with new non-null password
+	  console.log(errorSpan);
+	  errorSpan.innerHTML = 'The password entered was incorrect';
+	});
+
+	socket.on("canvas_redraw", function (canvas) {
+	  passModal.modal('hide');
+	  loadingOverlay.classList.add("no-display");
 	});
 
 	socket.on("canvas_update", function (data) {
-	  console.log("dsfsf");
 	  update(data.points[0], data.points[1], data.toolAttributes);
 	});
 

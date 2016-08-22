@@ -32,7 +32,7 @@ router.get('/join', function(req, res) {
 //API =========================================================
 router.post('/api/canvas', function (req, res) {
 	var name = req.body.name;
-	var pass = req.body.pass ? req.body.pass : null;
+	var pass = req.body.pass ? req.body.pass : null; // See post in create.html, might not be needed now
 
 	Canvas.count({'name': name}, function (err, count) {
 		if (count) {
@@ -43,7 +43,7 @@ router.post('/api/canvas', function (req, res) {
 		} else {
 			Canvas.create({
 				name: name,
-				password: pass,
+				pass: pass,
 				canvasInfo: {
 					name: name,
 					width: 900,
@@ -54,6 +54,7 @@ router.post('/api/canvas', function (req, res) {
 				if (err) {
 					console.log(err);
 				} else {
+          console.log(canvas);
 					//send over canvas as jsonc
 				}
 			});

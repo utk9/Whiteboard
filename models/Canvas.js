@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var canvasSchema = new mongoose.Schema({
 	name: String,
-	password: String,
+	pass: String,
 	canvasInfo: {
 		name: String,
 		width: Number,
