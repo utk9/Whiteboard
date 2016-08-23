@@ -1,6 +1,6 @@
-module.exports.sizeMap = [45, 36, 30, 25, 20, 15, 10]
+export const sizeMap = [45, 36, 30, 25, 20, 15, 10]
 
-module.exports.colorMap = {
+export const colorMap = {
   red: '#ec8168',
   orange: '#f2cc72',
   yellow: '#f5ef95',
@@ -10,4 +10,15 @@ module.exports.colorMap = {
   gray: '#b8b8b8',
   black: '#151515',
   white: '#ffffff',
+}
+
+export const paletteMap = {
+  splatter: {
+    marker: 'colorPalette',
+    eraser: 'colorPalette',
+  },
+  dots: {
+    marker: 'markerSizePalette',
+    eraser: 'eraserSizePalette',
+  }
 }

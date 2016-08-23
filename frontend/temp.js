@@ -43,9 +43,10 @@ canvasData.name = canvasName
 document.addEventListener('DOMContentLoaded', function() {
 
   // Initialize the canvas and draw settings
-  setSize();
   canvas.width = board.offsetWidth;
   canvas.height = board.offsetHeight;
+
+  InitializeSockets();
 
   // Select the default tool, color and size
   selectTool(document.querySelector('.marker'))
@@ -84,10 +85,4 @@ document.addEventListener('DOMContentLoaded', function() {
   canvas.addEventListener('mouseout', function (e) {
     draw('out', e);
   }, false);
-
-
-  function setSize () {
-    canvas.width = board.offsetWidth;
-    canvas.height = board.offsetHeight;
-  }
 });
