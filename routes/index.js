@@ -33,6 +33,8 @@ router.get('/join', function(req, res) {
 router.post('/api/canvas', function (req, res) {
 	var name = req.body.name;
 	var pass = req.body.pass ? req.body.pass : null; // See post in create.html, might not be needed now
+	var width = req.body.width;
+	var height = req.body.height;
 
 	Canvas.count({'name': name}, function (err, count) {
 		if (count) {
@@ -46,8 +48,8 @@ router.post('/api/canvas', function (req, res) {
 				pass: pass,
 				canvasInfo: {
 					name: name,
-					width: 900,
-					height: 700,
+					width: width,
+					height: height,
 					strokes: []
 				}
 			}, function (err, canvas) {

@@ -41,7 +41,9 @@
         if (canSend) {
           axios.post('/api/canvas', {
             name: name,
-            pass: password
+            pass: password,
+            width: screen.width,
+            height: screen.height 
           }).then(function(response) {
             window.location.href = `/${name}`;
           }).catch(function(error) {
