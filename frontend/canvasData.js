@@ -1,4 +1,4 @@
-module.exports.canvasData = {
+export const canvasData = {
   name: '',
   width: 0,
   height: 0,

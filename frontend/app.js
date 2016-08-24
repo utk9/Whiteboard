@@ -1,16 +1,19 @@
 import { ToolPalette } from './toolClasses.js'
-import { canvas } from './domNodes.js'
-import { mouseMove, mouseDown } from './draw.js'
+import { canvas, loadingOverlay, board } from './domNodes.js'
+import { mouseMove, mouseDown, mouseUpAndOut } from './draw.js'
+import { canvasData } from './canvasData.js'
 
 let socket
 
 document.addEventListener('DOMContentLoaded', function() {
-  // initializeSockets()
+  initializeSockets()
 
   const toolPalette = new ToolPalette()
-  const selectedTool = toolPalette.selectedTool
 
-  // addCanvasListeners()
+  canvas.width = board.offsetWidth
+  canvas.height = board.offsetHeight
+
+  addCanvasListeners(toolPalette)
 
 })
 
@@ -27,9 +30,9 @@ function initializeSockets() {
   })
 }
 
-function addCanvasListeners() {
+function addCanvasListeners(toolPalette) {
   canvas.addEventListener('mousemove', function(e) {
-    const drawData = mouseMove(selectedTool, e)
+    const drawData = mouseMove(toolPalette.selectedTool, e)
 
     if (drawData) {
       socket.emit("new_stroke", drawData)
@@ -37,7 +40,7 @@ function addCanvasListeners() {
   })
 
   canvas.addEventListener('mousedown', function(e) {
-    const drawData = mouseDown(selectedTool, e)
+    const drawData = mouseDown(toolPalette.selectedTool, e)
 
     if (drawData) {
       socket.emit("new_stroke", drawData)
@@ -49,6 +52,6 @@ function addCanvasListeners() {
   })
 
   canvas.addEventListener('mouseout', function(e) {
-    mouseUpAndOut
+    mouseUpAndOut()
   })
 }

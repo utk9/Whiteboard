@@ -54,7 +54,7 @@ export class Stroker extends Tool {
   }
 
   selectSizeByElement(newSizeEl) {
-    this.size = sizeMap[sizeMap[size.classList[NAME_INDEX].replace('size-', '')]]
+    this.size = sizeMap[newSizeEl.classList[NAME_INDEX].replace('size-', '')]
 
     this._setSize(newSizeEl)
   }
@@ -70,16 +70,18 @@ export class Stroker extends Tool {
 }
 
 export class Marker extends Stroker {
-  constructor(color, sizeIndex) {
+  constructor(color, sizeIndex, splatter) {
     super('marker', getToolElement('marker'), color, sizeIndex)
+    this.splatter = splatter
 
-    this.selectSizeByElement = this.selectSizeByElement.bind(this)
+    this.selectColorByElement = this.selectColorByElement.bind(this)
     this.selectColorByName = this.selectColorByName.bind(this)
   }
 
   selectColorByElement(colorEl) {
     const previousColor = this.color
     this.color = colorMap[colorEl.classList[NAME_INDEX]]
+    this.splatter.setBackgroundColor(previousColor, this.color)
   }
 
   selectColorByName(color) {
@@ -144,12 +146,13 @@ export class Palette {
     this.el.classList.toggle('open-palette')
   }
 
-  addListeners(selectChild) {
+  addListeners(selectChild, setPalette) {
     const children = Array.prototype.slice.call(this.el.children)
     children.forEach((child) => {
       child.addEventListener('click', (e) => {
         selectChild(child)
         this.toggle()
+        setPalette(null)
       })
     })
   }
@@ -163,6 +166,8 @@ export class ToolPalette extends Palette {
     this.palettes = {}
     this.selectedTool = null
 
+    this.setPalette = this.setPalette.bind(this)
+
     this.initialize()
   }
 
@@ -174,7 +179,7 @@ export class ToolPalette extends Palette {
     // Add all tools
     const splatter = new Splatter()
     const dots = new Dots()
-    const marker = new Marker('gray', 6)
+    const marker = new Marker('gray', 6, splatter)
     const eraser = new Eraser(6)
 
     this.tools = {
@@ -194,9 +199,9 @@ export class ToolPalette extends Palette {
       eraserSizePalette,
     }
 
-    colorPalette.addListeners(marker.selectColorByElement)
-    markerSizePalette.addListeners(marker.selectSizeByElement)
-    eraserSizePalette.addListeners(eraser.selectSizeByElement)
+    colorPalette.addListeners(marker.selectColorByElement, this.setPalette)
+    markerSizePalette.addListeners(marker.selectSizeByElement, this.setPalette)
+    eraserSizePalette.addListeners(eraser.selectSizeByElement, this.setPalette)
 
     // Set palettes
     splatter.addPalette(colorPalette)
@@ -246,7 +251,6 @@ export class ToolPalette extends Palette {
     })
   }
 
-  // Private
   setTool(newTool) {
     if (newTool !== this.selectedTool) {
       newTool.toggle()
@@ -258,6 +262,11 @@ export class ToolPalette extends Palette {
   }
 
   setPalette(newPalette) {
+    if (!newPalette) {
+      this.selectedPalette = null
+      return
+    }
+
     newPalette.toggle()
     if (newPalette !== this.selectedPalette) {
       if (this.selectedPalette) {

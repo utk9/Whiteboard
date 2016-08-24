@@ -1,4 +1,4 @@
-import { canvas, loadingOverlay } from './domNodes'
+import { canvas } from './domNodes'
 import { canvasData } from './canvasData'
 
 const ctx = canvas.getContext('2d')
@@ -8,7 +8,6 @@ let curPos = { x: 0, y: 0 }
 
 export const mouseDown = function(selectedTool, e) {
   setCurrentPos(e)
-
   const name = selectedTool.name
 
   switch (name) {
@@ -20,11 +19,11 @@ export const mouseDown = function(selectedTool, e) {
       ctx.arc(curPos.x, curPos.y, selectedTool.size/2, 0, 2 * Math.PI)
       ctx.fill()
       ctx.closePath()
-      return {
-        toolAttributes: selectedTool,
-        canvasName: canvasData.name,
-        points: [curPos],
-      }
+      // return {
+      //   toolAttributes: selectedTool,
+      //   canvasName: canvasData.name,
+      //   points: [curPos],
+      // }
   }
 
   drawing = true
