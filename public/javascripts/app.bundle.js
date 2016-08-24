@@ -192,7 +192,9 @@
 	  errorSpan.innerHTML = 'The password entered was incorrect';
 	});
 
-	socket.on("canvas_redraw", function (canvas) {
+	socket.on("canvas_redraw", function (canvasInfo) {
+	  console.log(canvasInfo); //change this to actually draw the canvas data onto teh canvas
+	  //canvas.width = 400;
 	  passModal.modal('hide');
 	  loadingOverlay.classList.add("no-display");
 	});

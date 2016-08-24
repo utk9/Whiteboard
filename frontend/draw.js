@@ -44,7 +44,10 @@ socket.on("incorrect_password", function () {
   errorSpan.innerHTML = 'The password entered was incorrect';
 });
 
-socket.on("canvas_redraw", function (canvas) {
+socket.on("canvas_redraw", function (canvasInfo) {
+  console.log(canvasInfo); //change this to actually draw the canvas data onto teh canvas
+  //canvas.width = canvasInfo.width;
+  //canvas.height = canvasInfo.height
   passModal.modal('hide')
   loadingOverlay.classList.add("no-display");
 });
