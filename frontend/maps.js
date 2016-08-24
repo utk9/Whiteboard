@@ -22,3 +22,6 @@ export const paletteMap = {
     eraser: 'eraserSizePalette',
   }
 }
+
+export const TOOL_START_INDEX = 3
+export const NAME_INDEX = 1

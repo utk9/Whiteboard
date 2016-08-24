@@ -1,7 +1,7 @@
-import { ToolPalette } from './toolClasses.js'
-import { canvas, loadingOverlay, board } from './domNodes.js'
-import { mouseMove, mouseDown, mouseUpAndOut } from './draw.js'
-import { canvasData } from './canvasData.js'
+import { ToolPalette } from './toolPalette'
+import { canvas, loadingOverlay, board } from './domNodes'
+import { mouseMove, mouseDown, mouseUpAndOut } from './draw'
+import { canvasData } from './canvasData'
 
 let socket
 
