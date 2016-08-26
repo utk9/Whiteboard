@@ -1,5 +1,5 @@
 import { ToolPalette } from './toolPalette'
-import { canvas, loadingOverlay, board } from './domNodes'
+import { canvas, cursorCanvas, loadingOverlay, board } from './domNodes'
 import { mouseMove, mouseDown, mouseUp, mouseOut } from './draw'
 import { canvasData } from './canvasData'
 
@@ -10,9 +10,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
   const toolPalette = new ToolPalette()
 
-  canvas.width = board.offsetWidth
-  canvas.height = board.offsetHeight
-
+  setCanvasSize()
   addCanvasListeners(toolPalette)
 
 })
@@ -30,8 +28,16 @@ function initializeSockets() {
   })
 }
 
+function setCanvasSize() {
+  canvas.width = board.offsetWidth
+  canvas.height = board.offsetHeight
+
+  cursorCanvas.width = board.offsetWidth
+  cursorCanvas.height = board.offsetHeight
+}
+
 function addCanvasListeners(toolPalette) {
-  canvas.addEventListener('mousemove', function(e) {
+  cursorCanvas.addEventListener('mousemove', function(e) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
 
     if (drawData) {
@@ -39,7 +45,7 @@ function addCanvasListeners(toolPalette) {
     }
   })
 
-  canvas.addEventListener('mousedown', function(e) {
+  cursorCanvas.addEventListener('mousedown', function(e) {
     const drawData = mouseDown(toolPalette.selectedTool, e)
 
     if (drawData) {
@@ -47,11 +53,11 @@ function addCanvasListeners(toolPalette) {
     }
   })
 
-  canvas.addEventListener('mouseup', function(e) {
+  cursorCanvas.addEventListener('mouseup', function(e) {
     mouseUp(e)
   })
 
-  canvas.addEventListener('mouseout', function(e) {
+  cursorCanvas.addEventListener('mouseout', function(e) {
     mouseOut(e)
   })
 }

@@ -1,13 +1,17 @@
-import { canvas } from './domNodes'
+import { canvas, cursorCanvas } from './domNodes'
 import { canvasData } from './canvasData'
 
 const ctx = canvas.getContext('2d')
+const cursorCtx = cursorCanvas.getContext('2d')
+
 let drawing = false
 let prevPos = { x: 0, y: 0 }
 let curPos = { x: 0, y: 0 }
 
 export const mouseDown = function(selectedTool, e) {
+
   setCurrentPos(e)
+
   const name = selectedTool.name
 
   switch (name) {
@@ -37,12 +41,13 @@ export const mouseMove = function(selectedTool, e) {
   switch (name) {
     case 'marker':
     case 'eraser':
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
-      ctx.beginPath()
-      ctx.fillStyle = 'black'
-      ctx.arc(getCurPos(e).x, getCurPos(e).y, selectedTool.size/2, 0, 2 * Math.PI)
-      ctx.stroke()
-      ctx.closePath()
+
+      // Draw the cursor
+      cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
+      cursorCtx.beginPath()
+      cursorCtx.arc(getCurPos(e).x, getCurPos(e).y, selectedTool.size/2, 0, 2 * Math.PI)
+      cursorCtx.stroke()
+      cursorCtx.closePath()
 
       if (!drawing) return
 
@@ -63,7 +68,7 @@ export const mouseUp = function(e) {
 
 export const mouseOut = function(e) {
   drawing = false
-  ctx.clearRect(0, 0, canvas.width, canvas.height)
+  cursorCtx.clearRect(0, 0, canvas.width, canvas.height)
 }
 
 function getCurPos(e) {

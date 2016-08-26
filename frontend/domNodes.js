@@ -5,9 +5,11 @@ import {
 
 export const toolList = document.querySelector('.tool-palette')
 export const canvas = document.getElementById('canvas-main')
-export const board = document.querySelector('.board');
+export const cursorCanvas = document.getElementById('canvas-cursor')
+export const board = document.querySelector('.board')
 export const loadingOverlay = document.querySelector('.loading-overlay')
 
+// TODO: Memoize the values
 export const getPaletteElement = function (name) {
   return document.querySelector(`.${name}-palette`)
 }
