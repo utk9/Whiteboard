@@ -1,6 +1,6 @@
 import { ToolPalette } from './toolPalette'
 import { canvas, loadingOverlay, board } from './domNodes'
-import { mouseMove, mouseDown, mouseUpAndOut } from './draw'
+import { mouseMove, mouseDown, mouseUp, mouseOut } from './draw'
 import { canvasData } from './canvasData'
 
 let socket
@@ -48,10 +48,10 @@ function addCanvasListeners(toolPalette) {
   })
 
   canvas.addEventListener('mouseup', function(e) {
-    mouseUpAndOut()
+    mouseUp(e)
   })
 
   canvas.addEventListener('mouseout', function(e) {
-    mouseUpAndOut()
+    mouseOut(e)
   })
 }
