@@ -20,7 +20,10 @@
   transition: background-color 300ms;
 }
 
-#canvas-main {
+#canvas-main, #canvas-cursor {
+  position: absolute;
+  top: 0;
+  left: 0;
   margin: 0;
   padding: 0;
   width: 100%;
