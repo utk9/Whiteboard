@@ -8,15 +8,47 @@
     <title>Whiteboard</title>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="/stylesheets/utils.css">
+    <link rel="stylesheet" href="/stylesheets/index.css">
   </head>
 
 
   <body>
-    <div class="jumbotron">
+    <div class="jumbotron flex flex-column justify-center">
       <h1 class="text-center">Whiteboard</h1>
+      <h4 class="text-center">Lorem ipsum real-time collaboration marker diagrams drawing</h4>
       <div class="flex justify-center">
-        <button type="button" class="btn btn-success btn-lg" id="js-create-new">Create</button>
-        <button type="button" class="btn btn-success btn-lg" id="js-join-existing">Join Existing</button>
+        <button type="button" class="btn action-btn" id="js-create-new">Create</button>
+        <div class="vertical-rule"></div>
+        <button type="button" class="btn action-btn" id="js-join-existing">Join Existing</button>
+      </div>
+      <div class="blue-box">
+        <div class="arrow create-arrow"></div>
+        <div class="arrow join-arrow no-display"></div>
+        <div class="form-box">
+          <div class="create-form flex flex-column align-center">
+            <div class="name-group">
+              <h3 class="text-center">Enter the name of your whiteboard</h3>
+              <input type="text" placeholder="Name" id="js-name" />
+              <div class="add-password flex justify-center">
+                <img src="assets/lock.png" alt="secure", class="lock-img">
+                <h6 class="text-center">Add a password</h6>
+              </div>
+            </div>
+            <div class="pass-group no-display">
+              <h3 class="text-center">Enter password</h3>
+              <input type="password" placeholder="Password" id="js-password" />
+            </div>
+            <button type="button" class="btn go-btn" id="js-create">GO</button>
+          </div>
+
+          <div class="join-form flex flex-column align-center no-display">
+            <div class="name-group">
+              <h3 class="text-center">Enter the name of your whiteboard</h3>
+              <input type="text" placeholder="Name" id="js-name" />
+            </div>
+            <button type="button" class="btn go-btn" id="js-create">GO</button>
+          </div>
+        </div>
       </div>
     </div>
 

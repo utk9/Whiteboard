@@ -1,0 +1,125 @@
+html, body {
+  font-family: sans-serif;
+  height: 100%;
+  color: #111;
+}
+
+.jumbotron {
+  margin: 0;
+  height: 100%;
+}
+
+.create-form, .join-form {
+  margin-bottom: 20px;
+}
+
+h1 {
+  font-size: 100px;
+  margin: 0;
+}
+
+h4 {
+  margin: 0 0 80px;
+}
+
+button.btn {
+  font-size: 20px;
+  border: none;
+  transition: color 250ms, box-shadow 300ms;
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+  color: white;
+  background-color: #111;
+}
+
+button.action-btn {
+  width: 170px;
+  height: 50px;
+  margin: 0 70px;
+  border-radius: 20px;
+}
+
+button.btn:hover, button.btn.selected {
+  color: #6ed4ff;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+.vertical-rule {
+  height: 50px;
+  width: 2px;
+  background-color: rgba(0, 0, 0, 0.5);
+}
+
+.blue-box {
+  position: relative;
+  margin: 50px auto;
+  background-color: #6ed4ff;
+  width: 800px;
+  padding: 40px 0px;
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+  border-radius: 20px;
+  box-sizing: border-box;
+}
+
+.blue-box h3 {
+  margin: 10px;
+  font-size: 20px;
+}
+
+.blue-box h6 {
+  margin: 0;
+  font-size: 15px;
+}
+
+.add-password {
+  cursor: pointer;
+  margin-top: 20px;
+  transition: opacity 250ms;
+}
+
+.add-password:hover {
+  opacity: 0.7;
+}
+
+img.lock-img {
+  width: 15px;
+  height: 15px;
+  margin-right: 3px;
+}
+
+.arrow {
+  position: absolute;
+  width: 40px;
+  height: 40px;
+  background-color: #6ed4ff;
+  transform: rotate(45deg);
+  border-radius: 5px;
+}
+
+.arrow.create-arrow {
+  top: -20px;
+  left: 220px;
+}
+
+.arrow.join-arrow {
+  top: -20px;
+  left: 540px;
+}
+
+input {
+  height: 50px;
+  width: 600px;
+  font-size: 20px;
+  text-align: center;
+  border: none;
+  border-radius: 5px;
+}
+
+button.go-btn {
+  position: absolute;
+  bottom: -25px;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+}
+
