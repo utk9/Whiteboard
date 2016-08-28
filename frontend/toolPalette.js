@@ -13,6 +13,7 @@ import {
 import {
   Marker,
   Eraser,
+  Circle,
   Splatter,
   Dots,
   Palette,
@@ -41,11 +42,13 @@ export class ToolPalette extends Palette {
     const dots = new Dots()
     const marker = new Marker('gray', 6, splatter)
     const eraser = new Eraser(6)
+    const circle = new Circle()
 
     this.tools = {
       splatter,
       marker,
       eraser,
+      circle,
     }
 
     // Add all palettes

@@ -100,6 +100,12 @@ export class Eraser extends Stroker {
   }
 }
 
+export class Circle extends Tool {
+  constructor() {
+    super('circle', getToolElement('circle'))
+  }
+}
+
 class PaletteTool extends Tool {
   constructor(name) {
     const el = getToolElement(name)

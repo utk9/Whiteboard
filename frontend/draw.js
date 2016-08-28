@@ -11,6 +11,7 @@ let curPos = { x: 0, y: 0 }
 export const mouseDown = function(selectedTool, e) {
 
   setCurrentPos(e)
+  drawing = true
 
   const name = selectedTool.name
 
@@ -24,11 +25,12 @@ export const mouseDown = function(selectedTool, e) {
       ctx.fill()
       ctx.closePath()
 
-      drawing = true
       return {
         toolAttributes: selectedTool,
         points: [curPos],
       }
+    case default:
+      return
   }
 
 }
