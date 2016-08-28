@@ -194,7 +194,8 @@
 
 	socket.on("canvas_redraw", function (canvasInfo) {
 	  console.log(canvasInfo); //change this to actually draw the canvas data onto teh canvas
-	  //canvas.width = 400;
+	  canvas.width = canvasInfo.width;
+	  canvas.height = canvasInfo.height;
 	  passModal.modal('hide');
 	  loadingOverlay.classList.add("no-display");
 	});

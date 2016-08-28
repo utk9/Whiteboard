@@ -37,7 +37,11 @@ router.post('/api/canvas', function (req, res) {
 	var height = req.body.height;
 
 	Canvas.count({'name': name}, function (err, count) {
-		if (count) {
+		if (err) {
+			console.log(err);
+			//send error to client
+		}
+		else if (count) {
 			res.status(403).json({
 				success: false,
 				reason: "This name already exists."
@@ -86,14 +90,12 @@ router.get('/api/canvas/:name', function(req, res) {
 		if (err) {
 			console.log(err);
 			//send error to client
+		} else if (!canvas) {
+			res.status(404).json({
+				reason: "This canvas does not exist"
+			});
 		} else {
-			if (canvas) {
-				res.json(canvas);
-			} else {
-				res.status(404).json({
-					reason: "This canvas does not exist"
-				});
-			}
+			res.json(canvas.canvasInfo);
 		}
 	});
 });
@@ -101,10 +103,13 @@ router.get('/api/canvas/:name', function(req, res) {
 //IO =========================================================
 io.on("connection", function (socket) {
   socket.on("new_user", function (canvasData) {
-    Canvas.findOne({name: canvasData.canvasInfo.name}, function (err, canvas){
+    Canvas.findOne({'name': canvasData.canvasInfo.name}, function (err, canvas){
       if (err) {
         console.log(err);
         //return error to user
+      } else if (!canvas) {
+      	console.log("not found");
+      	socket.emit("error"); //write client side from this
       } else {
         if (canvas.pass) {
           if (canvasData.pass) {
@@ -141,13 +146,19 @@ io.on("connection", function (socket) {
 //whiteboard route
 router.get('/:name', function(req, res) {
 	var name = req.params.name;
-	if (Canvas.find({'name': name}).limit(1).size()) {
-		res.render('whiteboard');
-	} else {
-		res.status(404).render('error');
-	}
+	Canvas.count({'name': name}, function (err, count) {
+		console.log(count);
+		if (err) {
+			console.log(err);
+			//send error to client
+		}
 
-
+		else if (count) {
+			res.render('whiteboard');
+		} else {
+			res.status(404).send("Not found");	
+		}	
+	});
 });
 
 return router;
