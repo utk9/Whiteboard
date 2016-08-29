@@ -17,7 +17,7 @@
       <h1 class="text-center">Whiteboard</h1>
       <h4 class="text-center">Lorem ipsum real-time collaboration marker diagrams drawing</h4>
       <div class="flex justify-center">
-        <button type="button" class="btn action-btn" id="js-create-new">Create</button>
+        <button type="button" class="btn action-btn selected" id="js-create-new">Create</button>
         <div class="vertical-rule"></div>
         <button type="button" class="btn action-btn" id="js-join-existing">Join Existing</button>
       </div>
@@ -27,42 +27,140 @@
         <div class="form-box">
           <div class="create-form flex flex-column align-center">
             <div class="name-group">
-              <h3 class="text-center">Enter the name of your whiteboard</h3>
-              <input type="text" placeholder="Name" id="js-name" />
-              <div class="add-password flex justify-center">
-                <img src="assets/lock.png" alt="secure", class="lock-img">
-                <h6 class="text-center">Add a password</h6>
-              </div>
+              <h3 class="text-center">Create a name for your whiteboard</h3>
+              <input type="text" placeholder="Name" id="js-create-name" />
             </div>
             <div class="pass-group no-display">
-              <h3 class="text-center">Enter password</h3>
+              <h3 class="text-center">Create a password</h3>
               <input type="password" placeholder="Password" id="js-password" />
             </div>
+            <span class="error block-display" id="js-create-error"></span>
+
+            <div class="add-password flex justify-center">
+              <img src="assets/lock.png" alt="secure", class="lock-img">
+              <h6 class="text-center" id="js-add-pass">Add a password</h6>
+            </div>
+
             <button type="button" class="btn go-btn" id="js-create">GO</button>
           </div>
 
           <div class="join-form flex flex-column align-center no-display">
             <div class="name-group">
               <h3 class="text-center">Enter the name of your whiteboard</h3>
-              <input type="text" placeholder="Name" id="js-name" />
+              <input type="text" placeholder="Name" id="js-join-name" />
             </div>
-            <button type="button" class="btn go-btn" id="js-create">GO</button>
+            <span class="error block-display" id="js-join-error"></span>
+
+            <button type="button" class="btn go-btn" id="js-join">GO</button>
           </div>
         </div>
       </div>
     </div>
 
     <script>
-      let createButton = document.getElementById('js-create-new');
-      let joinButton = document.getElementById('js-join-existing');
 
-      createButton.addEventListener('click', function() {
-        window.location.href = '/create';
+      const formEls = {
+        create: {
+          arrow: document.querySelector('.create-arrow'),
+          button: document.querySelector('#js-create-new'),
+          form: document.querySelector('.create-form'),
+          error: document.querySelector('#js-create-error'),
+        },
+        join: {
+          arrow: document.querySelector('.join-arrow'),
+          button: document.querySelector('#js-join-existing'),
+          form: document.querySelector('.join-form'),
+          error: document.querySelector('#js-join-error'),
+        },
+      }
+      const addPass = document.querySelector('.add-password');
+      const addPassButton = document.querySelector('#js-add-pass');
+      const passGroup = document.querySelector('.pass-group');
+
+      const createGoButton = document.querySelector('#js-create');
+      const joinGoButton = document.querySelector('#js-join');
+
+      let withPass = false
+
+      formEls.create.button.addEventListener('click', function() {
+        toggleForm('create', 'join');
       });
 
-      joinButton.addEventListener('click', function() {
-        window.location.href = '/join';
+      formEls.join.button.addEventListener('click', function() {
+        toggleForm('join', 'create');
       });
+
+      createGoButton.addEventListener('click', function() {
+        const nameInput = document.querySelector('#js-create-name');
+        const passwordInput = document.querySelector('#js-password');
+        const errorSpan = formEls.create.error;
+
+        const name = nameInput.value
+        const password = withPass ? passwordInput.value : null
+
+        const canSend = !isBlank(name) && (withPass ? !isBlank(password) : true)
+
+        if (canSend) {
+          axios.post('/api/canvas', {
+            name: name,
+            pass: password,
+            width: screen.width,
+            height: screen.height
+          }).then(function(response) {
+            window.location.href = `/${name}`;
+          }).catch(function(error) {
+            errorSpan.innerHTML = error.response.data.reason
+          });
+        } else {
+          errorSpan.innerHTML = 'Please completely fill in all the fields.';
+        }
+      })
+
+      joinGoButton.addEventListener('click', function() {
+        const nameInput = document.querySelector('#js-join-name');
+        const errorSpan = formEls.join.error;
+
+        const name = nameInput.value;
+
+        if (!isBlank(name)) {
+          axios.get(`/api/canvas/${name}`)
+          .then(function(response) {
+            window.location.href = `/${name}`;
+          }).catch(function(error) {
+            errorSpan.innerHTML = error.response.data.reason
+          });
+        } else {
+          errorSpan.innerHTML = 'Please enter a name.';
+        }
+      })
+
+      addPass.addEventListener('click', function() {
+        addPassButton.innerHTML = withPass ? 'Add a password' : 'Remove password'
+
+        passGroup.classList.toggle('no-display');
+
+        withPass = !withPass
+      });
+
+      function toggleForm(toDisplay, toRemove) {
+        const formToDisplay = formEls[toDisplay]
+        const formToRemove = formEls[toRemove]
+
+        formToDisplay.button.classList.add('selected');
+        formToRemove.button.classList.remove('selected');
+
+        formToDisplay.form.classList.remove('no-display');
+        formToRemove.form.classList.add('no-display');
+
+        formToDisplay.arrow.classList.remove('no-display');
+        formToRemove.arrow.classList.add('no-display');
+
+        formToRemove.error.innerHTML = '';
+      }
+
+      function isBlank(str) {
+        return !str || str.trim() === ''
+      }
     </script>
   </body>
 </html>
