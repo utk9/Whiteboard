@@ -13,17 +13,23 @@ html, body {
   margin-bottom: 20px;
 }
 
+.logo {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
 h1 {
-  font-size: 100px;
+  font-size: 90px;
   margin: 0;
 }
 
 h4 {
-  margin: 0 0 80px;
+  margin: 0 0 20px;
 }
 
 button.btn {
-  font-size: 20px;
+  font-size: 18px;
   border: none;
   transition: color 250ms, box-shadow 300ms;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
@@ -36,8 +42,8 @@ button:focus {
 }
 
 button.action-btn {
-  width: 170px;
-  height: 50px;
+  width: 160px;
+  height: 45px;
   margin: 0 70px;
   border-radius: 20px;
 }
@@ -56,10 +62,10 @@ button.btn:hover, button.btn.selected {
 
 .blue-box {
   position: relative;
-  margin: 50px auto;
+  margin: 40px auto;
   background-color: #6ed4ff;
   width: 800px;
-  padding: 40px 0px;
+  padding: 25px 0px;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
   border-radius: 20px;
   box-sizing: border-box;
@@ -67,7 +73,7 @@ button.btn:hover, button.btn.selected {
 
 .blue-box h3 {
   margin: 30px 0 10px;
-  font-size: 20px;
+  font-size: 18px;
 }
 
 .blue-box h6 {
@@ -111,9 +117,9 @@ img.lock-img {
 }
 
 input {
-  height: 50px;
+  height: 40px;
   width: 600px;
-  font-size: 20px;
+  font-size: 18px;
   text-align: center;
   border: none;
   border-radius: 5px;
