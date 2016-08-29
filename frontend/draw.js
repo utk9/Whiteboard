@@ -63,16 +63,22 @@ export const mouseMove = function(selectedTool, e) {
     case 'circle':
       if (!drawing) return
 
-      const centerX = (getCurPos(e).x + curPos.x) / 2
-      const centerY = (getCurPos(e).y + curPos.y) / 2
-      const diagonalLength = Math.abs(getCurPos(e).x - curPos.x)
-      const radius =
+      const sideX = Math.abs(getCurPos(e).x - curPos.x)
+      const sideY = Math.abs(getCurPos(e).y - curPos.y)
+      const minSideLength = Math.min(sideX, sideY)
+
+      const centerX = curPos.x + minSideLength / 2
+      const centerY = curPos.y + minSideLength / 2
+      const radius = minSideLength / 2
 
       cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
       cursorCtx.beginPath()
-      cursorCtx.arc(centerX, centerY, selectedTool.size/2, 0, 2 * Math.PI)
+      cursorCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI)
       cursorCtx.stroke()
       cursorCtx.closePath()
+
+      selectedTool.setShape(centerX, centerY, radius)
+      return
 
     case 'rectangle':
       if (!drawing) return
@@ -87,6 +93,9 @@ export const mouseMove = function(selectedTool, e) {
       cursorCtx.stroke()
       cursorCtx.closePath()
 
+      selectedTool.setShape(curPos.x, curPos.y, width, height)
+      return
+
     default:
       return
   }
@@ -97,32 +106,41 @@ export const mouseUp = function(selectedTool, e) {
   drawing = false
 
   const name = selectedTool.name
+  const shape = selectedTool.shape
 
   switch (name) {
     case 'circle':
-      return
-    case 'rectangle':
       cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
-
-      const width = getCurPos(e).x - curPos.x
-      const height = getCurPos(e).y - curPos.y
 
       ctx.beginPath()
       ctx.lineWidth = 2
       ctx.strokeStyle = colorMap['black']
-      ctx.rect(curPos.x, curPos.y, width, height)
+
+      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI)
       ctx.stroke()
       ctx.closePath()
 
       return {
         toolAttributes: selectedTool,
         canvasName: canvasData.name,
-        shape: {
-          x: curPos.x,
-          y: curPos.y,
-          width,
-          height,
-        }
+        shape,
+      }
+
+    case 'rectangle':
+      cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
+
+      ctx.beginPath()
+      ctx.lineWidth = 2
+      ctx.strokeStyle = colorMap['black']
+
+      ctx.rect(shape.x, shape.y, shape.width, shape.height)
+      ctx.stroke()
+      ctx.closePath()
+
+      return {
+        toolAttributes: selectedTool,
+        canvasName: canvasData.name,
+        shape,
       }
     default:
       return
