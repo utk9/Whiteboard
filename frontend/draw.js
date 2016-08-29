@@ -1,5 +1,6 @@
 import { canvas, cursorCanvas } from './domNodes'
 import { canvasData } from './canvasData'
+import { colorMap } from './maps'
 
 const ctx = canvas.getContext('2d')
 const cursorCtx = cursorCanvas.getContext('2d')
@@ -29,7 +30,7 @@ export const mouseDown = function(selectedTool, e) {
         toolAttributes: selectedTool,
         points: [curPos],
       }
-    case default:
+    default:
       return
   }
 
@@ -58,11 +59,74 @@ export const mouseMove = function(selectedTool, e) {
         toolAttributes: selectedTool,
         points: [prevPos, curPos],
       }
+
+    case 'circle':
+      if (!drawing) return
+
+      const centerX = (getCurPos(e).x + curPos.x) / 2
+      const centerY = (getCurPos(e).y + curPos.y) / 2
+      const diagonalLength = Math.abs(getCurPos(e).x - curPos.x)
+      const radius =
+
+      cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
+      cursorCtx.beginPath()
+      cursorCtx.arc(centerX, centerY, selectedTool.size/2, 0, 2 * Math.PI)
+      cursorCtx.stroke()
+      cursorCtx.closePath()
+
+    case 'rectangle':
+      if (!drawing) return
+
+      const width = getCurPos(e).x - curPos.x
+      const height = getCurPos(e).y - curPos.y
+
+      cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
+
+      cursorCtx.beginPath()
+      cursorCtx.rect(curPos.x, curPos.y, width, height)
+      cursorCtx.stroke()
+      cursorCtx.closePath()
+
+    default:
+      return
   }
 }
 
-export const mouseUp = function(e) {
+export const mouseUp = function(selectedTool, e) {
+  if (!drawing) return
   drawing = false
+
+  const name = selectedTool.name
+
+  switch (name) {
+    case 'circle':
+      return
+    case 'rectangle':
+      cursorCtx.clearRect(0, 0, cursorCanvas.width, cursorCanvas.height)
+
+      const width = getCurPos(e).x - curPos.x
+      const height = getCurPos(e).y - curPos.y
+
+      ctx.beginPath()
+      ctx.lineWidth = 2
+      ctx.strokeStyle = colorMap['black']
+      ctx.rect(curPos.x, curPos.y, width, height)
+      ctx.stroke()
+      ctx.closePath()
+
+      return {
+        toolAttributes: selectedTool,
+        canvasName: canvasData.name,
+        shape: {
+          x: curPos.x,
+          y: curPos.y,
+          width,
+          height,
+        }
+      }
+    default:
+      return
+  }
 }
 
 export const mouseOut = function(e) {

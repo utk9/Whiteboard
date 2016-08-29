@@ -106,6 +106,12 @@ export class Circle extends Tool {
   }
 }
 
+export class Rectangle extends Tool {
+  constructor() {
+    super('rectangle', getToolElement('rectangle'))
+  }
+}
+
 class PaletteTool extends Tool {
   constructor(name) {
     const el = getToolElement(name)

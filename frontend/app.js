@@ -115,7 +115,11 @@ function addCanvasListeners(toolPalette) {
   })
 
   cursorCanvas.addEventListener('mouseup', function(e) {
-    mouseUp(e)
+    const drawData = mouseUp(toolPalette.selectedTool, e)
+
+    if (drawData) {
+      socket.emit("new_shape", drawData)
+    }
   })
 
   cursorCanvas.addEventListener('mouseout', function(e) {
