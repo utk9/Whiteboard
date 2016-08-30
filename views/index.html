@@ -9,6 +9,9 @@
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     <link rel="stylesheet" href="/stylesheets/utils.css">
     <link rel="stylesheet" href="/stylesheets/index.css">
+
+    <script src="https://npmcdn.com/axios/dist/axios.min.js"></script>
+
   </head>
 
 
@@ -94,6 +97,7 @@
       });
 
       createGoButton.addEventListener('click', function() {
+        console.log("create presses");
         const nameInput = document.querySelector('#js-create-name');
         const passwordInput = document.querySelector('#js-password');
         const errorSpan = formEls.create.error;

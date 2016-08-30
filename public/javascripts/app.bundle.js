@@ -61,9 +61,7 @@
 
 	  var toolPalette = new _toolPalette.ToolPalette();
 
-	  _domNodes.canvas.width = _domNodes.board.offsetWidth;
-	  _domNodes.canvas.height = _domNodes.board.offsetHeight;
-
+	  setCanvasSize();
 	  addCanvasListeners(toolPalette);
 	});
 
@@ -80,8 +78,16 @@
 	  });
 	}
 
+	function setCanvasSize() {
+	  _domNodes.canvas.width = _domNodes.board.offsetWidth;
+	  _domNodes.canvas.height = _domNodes.board.offsetHeight;
+
+	  _domNodes.cursorCanvas.width = _domNodes.board.offsetWidth;
+	  _domNodes.cursorCanvas.height = _domNodes.board.offsetHeight;
+	}
+
 	function addCanvasListeners(toolPalette) {
-	  _domNodes.canvas.addEventListener('mousemove', function (e) {
+	  _domNodes.cursorCanvas.addEventListener('mousemove', function (e) {
 	    var drawData = (0, _draw.mouseMove)(toolPalette.selectedTool, e);
 
 	    if (drawData) {
@@ -89,7 +95,7 @@
 	    }
 	  });
 
-	  _domNodes.canvas.addEventListener('mousedown', function (e) {
+	  _domNodes.cursorCanvas.addEventListener('mousedown', function (e) {
 	    var drawData = (0, _draw.mouseDown)(toolPalette.selectedTool, e);
 
 	    if (drawData) {
@@ -97,12 +103,12 @@
 	    }
 	  });
 
-	  _domNodes.canvas.addEventListener('mouseup', function (e) {
-	    (0, _draw.mouseUpAndOut)();
+	  _domNodes.cursorCanvas.addEventListener('mouseup', function (e) {
+	    (0, _draw.mouseUp)(e);
 	  });
 
-	  _domNodes.canvas.addEventListener('mouseout', function (e) {
-	    (0, _draw.mouseUpAndOut)();
+	  _domNodes.cursorCanvas.addEventListener('mouseout', function (e) {
+	    (0, _draw.mouseOut)(e);
 	  });
 	}
 
@@ -319,15 +325,17 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.loadingOverlay = exports.board = exports.canvas = exports.toolList = undefined;
+	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.loadingOverlay = exports.board = exports.cursorCanvas = exports.canvas = exports.toolList = undefined;
 
 	var _maps = __webpack_require__(2);
 
 	var toolList = exports.toolList = document.querySelector('.tool-palette');
 	var canvas = exports.canvas = document.getElementById('canvas-main');
+	var cursorCanvas = exports.cursorCanvas = document.getElementById('canvas-cursor');
 	var board = exports.board = document.querySelector('.board');
 	var loadingOverlay = exports.loadingOverlay = document.querySelector('.loading-overlay');
 
+	// TODO: Memoize the values
 	var getPaletteElement = exports.getPaletteElement = function getPaletteElement(name) {
 	  return document.querySelector('.' + name + '-palette');
 	};
@@ -549,11 +557,6 @@
 	  _createClass(Splatter, [{
 	    key: 'setBackgroundColor',
 	    value: function setBackgroundColor(previousColor, color) {
-
-	      console.log(previousColor, color);
-	      console.log(color === _maps.colorMap['black'] || previousColor === _maps.colorMap['black']);
-	      console.log(previousColor !== color);
-
 	      // Toggle the border around the black splatter
 	      if ((color === _maps.colorMap['black'] || previousColor === _maps.colorMap['black']) && previousColor !== color) {
 	        this.toggle();
@@ -622,19 +625,23 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.mouseUpAndOut = exports.mouseMove = exports.mouseDown = undefined;
+	exports.mouseOut = exports.mouseUp = exports.mouseMove = exports.mouseDown = undefined;
 
 	var _domNodes = __webpack_require__(3);
 
 	var _canvasData = __webpack_require__(6);
 
 	var ctx = _domNodes.canvas.getContext('2d');
+	var cursorCtx = _domNodes.cursorCanvas.getContext('2d');
+
 	var drawing = false;
 	var prevPos = { x: 0, y: 0 };
 	var curPos = { x: 0, y: 0 };
 
 	var mouseDown = exports.mouseDown = function mouseDown(selectedTool, e) {
+
 	  setCurrentPos(e);
+
 	  var name = selectedTool.name;
 
 	  switch (name) {
@@ -646,25 +653,33 @@
 	      ctx.arc(curPos.x, curPos.y, selectedTool.size / 2, 0, 2 * Math.PI);
 	      ctx.fill();
 	      ctx.closePath();
-	    // return {
-	    //   toolAttributes: selectedTool,
-	    //   canvasName: canvasData.name,
-	    //   points: [curPos],
-	    // }
-	  }
 
-	  drawing = true;
+	      drawing = true;
+	      return {
+	        toolAttributes: selectedTool,
+	        canvasName: _canvasData.canvasData.name,
+	        points: [curPos]
+	      };
+	  }
 	};
 
 	var mouseMove = exports.mouseMove = function mouseMove(selectedTool, e) {
-	  if (!drawing) return;
 
-	  // Right syntax?
 	  var name = selectedTool.name;
 
 	  switch (name) {
 	    case 'marker':
 	    case 'eraser':
+
+	      // Draw the cursor
+	      cursorCtx.clearRect(0, 0, _domNodes.cursorCanvas.width, _domNodes.cursorCanvas.height);
+	      cursorCtx.beginPath();
+	      cursorCtx.arc(getCurPos(e).x, getCurPos(e).y, selectedTool.size / 2, 0, 2 * Math.PI);
+	      cursorCtx.stroke();
+	      cursorCtx.closePath();
+
+	      if (!drawing) return;
+
 	      setPrevPos();
 	      setCurrentPos(e);
 	      stroke(selectedTool);
@@ -676,9 +691,21 @@
 	  }
 	};
 
-	var mouseUpAndOut = exports.mouseUpAndOut = function mouseUpAndOut(e) {
+	var mouseUp = exports.mouseUp = function mouseUp(e) {
 	  drawing = false;
 	};
+
+	var mouseOut = exports.mouseOut = function mouseOut(e) {
+	  drawing = false;
+	  cursorCtx.clearRect(0, 0, _domNodes.canvas.width, _domNodes.canvas.height);
+	};
+
+	function getCurPos(e) {
+	  return {
+	    x: e.clientX - _domNodes.canvas.offsetLeft,
+	    y: e.clientY - _domNodes.canvas.offsetTop
+	  };
+	}
 
 	function setPrevPos() {
 	  prevPos.x = curPos.x;
@@ -705,17 +732,25 @@
 	}
 
 	function update(prevPos, curPos, toolAttributes) {
-	  ctx.beginPath();
+	  if (prevPos) {
+	    ctx.beginPath();
+	    ctx.fillStyle = selectedTool.color;
+	    ctx.arc(curPos.x, curPos.y, selectedTool.size / 2, 0, 2 * Math.PI);
+	    ctx.fill();
+	    ctx.closePath();
+	  } else {
+	    ctx.beginPath();
 
-	  ctx.lineWidth = toolAttributes.size;
-	  ctx.strokeStyle = toolAttributes.color;
+	    ctx.lineWidth = toolAttributes.size;
+	    ctx.strokeStyle = toolAttributes.color;
 
-	  ctx.lineJoin = ctx.lineCap = 'round';
-	  ctx.moveTo(prevPos.x, prevPos.y);
-	  ctx.lineTo(curPos.x, curPos.y);
+	    ctx.lineJoin = ctx.lineCap = 'round';
+	    ctx.moveTo(prevPos.x, prevPos.y);
+	    ctx.lineTo(curPos.x, curPos.y);
 
-	  ctx.stroke();
-	  ctx.closePath();
+	    ctx.stroke();
+	    ctx.closePath();
+	  }
 	}
 
 /***/ },
