@@ -16,11 +16,17 @@ import {
 } from './draw'
 import { canvasData } from './canvasData'
 
-let socket
+let socket, loadingInterval
+
 const url = window.location.href
 const canvasName = url.substring(url.lastIndexOf('/') + 1)
 
+const dots = '...'
+const loadingText = document.querySelector('.loading-text')
+
 document.addEventListener('DOMContentLoaded', function() {
+  animateLoading(0)
+
   initializeSockets()
 
   const toolPalette = new ToolPalette()
@@ -116,4 +122,11 @@ function addCanvasListeners(toolPalette) {
   cursorCanvas.addEventListener('mouseout', function(e) {
     mouseOut(e)
   })
+}
+
+function animateLoading(n) {
+  loadingInterval = setTimeout(function() {
+    loadingText.innerHTML = `Loading${dots.substring(0, n % 4)}`
+    animateLoading(n + 1)
+  }, 250)
 }

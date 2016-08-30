@@ -179,15 +179,19 @@
 
 .loading-icon {
   background-color: black;
-  padding: 0px 20px;
+  height: 60px;
+  width: 120px;
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translateX(-50%);
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.4);
+  border-radius: 5px;
 }
 
-.loading-icon h3 {
+.loading-text {
   color: white;
+  margin-left: 20px;
 }
 
 .password-modal {
