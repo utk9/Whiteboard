@@ -35,7 +35,6 @@ export const mouseDown = function(selectedTool, e) {
 }
 
 export const mouseMove = function(selectedTool, e) {
-
   const name = selectedTool.name
 
   switch (name) {
