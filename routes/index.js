@@ -103,7 +103,8 @@ router.get('/api/canvas/:name', function(req, res) {
 //IO =========================================================
 io.on("connection", function (socket) {
   socket.on("new_user", function (canvasData) {
-    Canvas.findOne({'name': canvasData.canvasInfo.name}, function (err, canvas){
+  	console.log(canvasData);
+    Canvas.findOne({'name': canvasData.name}, function (err, canvas){
       if (err) {
         console.log(err);
         //return error to user

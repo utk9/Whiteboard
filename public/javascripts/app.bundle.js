@@ -140,18 +140,8 @@
 	var ToolPalette = exports.ToolPalette = function (_Palette) {
 	  _inherits(ToolPalette, _Palette);
 
-<<<<<<< HEAD
 	  function ToolPalette() {
 	    _classCallCheck(this, ToolPalette);
-=======
-	socket.on("canvas_redraw", function (canvasInfo) {
-	  console.log(canvasInfo); //change this to actually draw the canvas data onto teh canvas
-	  canvas.width = canvasInfo.width;
-	  canvas.height = canvasInfo.height;
-	  passModal.modal('hide');
-	  loadingOverlay.classList.add("no-display");
-	});
->>>>>>> origin/server-fix
 
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(ToolPalette).call(this, 'tool'));
 
@@ -674,7 +664,6 @@
 	};
 
 	var mouseMove = exports.mouseMove = function mouseMove(selectedTool, e) {
-
 	  var name = selectedTool.name;
 
 	  switch (name) {
