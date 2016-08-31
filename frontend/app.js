@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', function() {
 })
 
 function initializeSockets() {
+  //TODO: Send actual canvasData here
   socket = io()
   socket.emit("new_user", canvasData)
 
