@@ -145,7 +145,7 @@ io.on("connection", function (socket) {
 
 
 //whiteboard route
-router.get('/:name', function(req, res) {
+router.get('/:name', function(req, res, next) {
 	var name = req.params.name;
 	Canvas.count({'name': name}, function (err, count) {
 		console.log(count);
@@ -157,7 +157,9 @@ router.get('/:name', function(req, res) {
 		else if (count) {
 			res.render('whiteboard');
 		} else {
-			res.status(404).send("Not found");	
+			//res.status(404).send("Not found");
+			//throw new Error("White board named " + name + " not found.")	
+			return next(new Error("White board not found."));
 		}	
 	});
 });
