@@ -11,6 +11,8 @@ var io = require('socket.io')(server);
 
 var routes = require('./routes/index')(io);
 
+app.disable('x-powered-by');
+
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'jade');
