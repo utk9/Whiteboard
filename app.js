@@ -34,20 +34,18 @@ app.use(function(req, res, next) {
   next(err);
 });
 
-// error handlers
+//error handlers
 
-// development error handler
-// will print stacktrace
-if (app.get('env') === 'development') {
-  app.use(function(err, req, res, next) {
-  	console.log(err);
-    res.status(err.status || 500);
-    res.render('error');
-  });
-}
+app.use(function(err, req, res, next) {
+  if (err.status && err.status == 404) {
+    res.status = 404;
+    res.render('notFound');
+  } else {
+    next(err);
+  }
 
-// production error handler
-// no stacktraces leaked to user
+});
+
 app.use(function(err, req, res, next) {
    console.log(err);
   res.status(err.status || 500);

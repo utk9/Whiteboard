@@ -21,10 +21,11 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
+//NOTE: Depracated
 router.get('/create', function(req, res) {
 	res.render('create');
 });
-
+//NOTE: Depracated 
 router.get('/join', function(req, res) {
 	res.render('join');
 });
@@ -38,14 +39,14 @@ router.post('/api/canvas', function (req, res) {
 
 	Canvas.count({'name': name}, function (err, count) {
 		if (err) {
-			console.log(err);
-			//send error to client
+			return next(err);
 		}
 		else if (count) {
 			res.status(403).json({
 				success: false,
 				reason: "This name already exists."
 			});
+			//return next(new Error("This name already exists."))
 		} else {
 			Canvas.create({
 				name: name,
@@ -75,25 +76,25 @@ router.post('/api/canvas', function (req, res) {
 router.get('/api/canvas', function(req, res) {
 	db.find(function (err, data) {
 		if (err) {
-			console.log(err);
-			//send error to client
+			return next(err);
 		} else {
 			res.json(data);
 		}
 	});
-	res.send();
 });
 
 router.get('/api/canvas/:name', function(req, res) {
 	var name = req.params.name;
 	Canvas.findOne({'name': name}, function(err, canvas) {
 		if (err) {
-			console.log(err);
-			//send error to client
+			return next(err);
 		} else if (!canvas) {
-			res.status(404).json({
-				reason: "This canvas does not exist"
-			});
+			// res.status(404).json({
+			// 	reason: "This canvas does not exist"
+			// });
+			var notFount = new Error ("Canvas with name " + name + " not found.")
+			notFound.status = 404;
+			return next(notFount);
 		} else {
 			res.json(canvas.canvasInfo);
 		}
@@ -150,7 +151,7 @@ router.get('/:name', function(req, res, next) {
 	Canvas.count({'name': name}, function (err, count) {
 		console.log(count);
 		if (err) {
-			console.log(err);
+			return next(err);
 			//send error to client
 		}
 
@@ -159,7 +160,10 @@ router.get('/:name', function(req, res, next) {
 		} else {
 			//res.status(404).send("Not found");
 			//throw new Error("White board named " + name + " not found.")	
-			return next(new Error("White board not found."));
+			 var notFount = new Error ("Canvas with name " + name + " not found.")
+			notFound.status = 404;
+			return next(notFount);
+			//next();
 		}	
 	});
 });
