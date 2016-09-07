@@ -1,9 +1,11 @@
 import { ToolPalette } from './toolPalette'
 import { canvas, cursorCanvas, loadingOverlay, board } from './domNodes'
-import { mouseMove, mouseDown, mouseUp, mouseOut } from './draw'
+import { mouseMove, mouseDown, mouseUp, mouseOut, update } from './draw'
 import { canvasData } from './canvasData'
 
 let socket
+const url = window.location.href
+const canvasName = url.substring(url.lastIndexOf('/') + 1)
 
 document.addEventListener('DOMContentLoaded', function() {
   initializeSockets()
@@ -18,14 +20,30 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeSockets() {
   //TODO: Send actual canvasData here
   socket = io()
-  socket.emit("new_user", canvasData)
+
+  socket.emit("new_user", {
+    name: canvasName,
+    width: screen.width,
+    height: screen.height,
+    strokes: [],
+  })
 
   socket.on("canvas_redraw", function(canvas) {
     loadingOverlay.classList.add("no-display")
+    console.log(canvas)
+
+    //TODO: Write an update function for all strokes
+    canvas.strokes.forEach(function(data) {
+      update(data.points[0], data.points[1], data.toolAttributes)
+    })
   })
 
   socket.on("canvas_update", function(data) {
     update(data.points[0], data.points[1], data.toolAttributes)
+  })
+
+  socket.on("error", function(payload) {
+    console.log(payload)
   })
 }
 
@@ -42,7 +60,7 @@ function addCanvasListeners(toolPalette) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
 
     if (drawData) {
-      socket.emit("new_stroke", drawData)
+      socket.emit("new_stroke", Object.assign(drawData, { canvasName }))
     }
   })
 
@@ -50,7 +68,7 @@ function addCanvasListeners(toolPalette) {
     const drawData = mouseDown(toolPalette.selectedTool, e)
 
     if (drawData) {
-      socket.emit("new_stroke", drawData)
+      socket.emit("new_stroke", Object.assign(drawData, { canvasName }))
     }
   })
 

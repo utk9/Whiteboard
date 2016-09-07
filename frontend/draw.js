@@ -27,7 +27,6 @@ export const mouseDown = function(selectedTool, e) {
       drawing = true
       return {
         toolAttributes: selectedTool,
-        canvasName: canvasData.name,
         points: [curPos],
       }
   }
@@ -55,7 +54,6 @@ export const mouseMove = function(selectedTool, e) {
       stroke(selectedTool)
       return {
         toolAttributes: selectedTool,
-        canvasName: canvasData.name,
         points: [prevPos, curPos],
       }
   }
@@ -102,7 +100,7 @@ function stroke(selectedTool) {
 }
 
 function update(prevPos, curPos, toolAttributes) {
-  if (prevPos) {
+  if (curPos) {
     ctx.beginPath()
     ctx.fillStyle = selectedTool.color
     ctx.arc(curPos.x, curPos.y, selectedTool.size/2, 0, 2 * Math.PI)

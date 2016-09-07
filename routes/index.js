@@ -25,7 +25,7 @@ router.get('/', function(req, res, next) {
 router.get('/create', function(req, res) {
 	res.render('create');
 });
-//NOTE: Depracated 
+//NOTE: Depracated
 router.get('/join', function(req, res) {
 	res.render('join');
 });
@@ -111,7 +111,7 @@ io.on("connection", function (socket) {
         //return error to user
       } else if (!canvas) {
       	console.log("not found");
-      	socket.emit("error"); //write client side from this
+      	socket.emit("error", error); //write client side from this
       } else {
         if (canvas.pass) {
           if (canvasData.pass) {
@@ -125,7 +125,7 @@ io.on("connection", function (socket) {
             socket.emit("password_required");
           }
         } else {
-          socket.join(canvasData.canvasInfo.name);
+          socket.join(canvasData.name);
           socket.emit("canvas_redraw", canvas.canvasInfo);
         }
 
@@ -159,12 +159,12 @@ router.get('/:name', function(req, res, next) {
 			res.render('whiteboard');
 		} else {
 			//res.status(404).send("Not found");
-			//throw new Error("White board named " + name + " not found.")	
+			//throw new Error("White board named " + name + " not found.")
 			 var notFount = new Error ("Canvas with name " + name + " not found.")
 			notFound.status = 404;
 			return next(notFount);
 			//next();
-		}	
+		}
 	});
 });
 
