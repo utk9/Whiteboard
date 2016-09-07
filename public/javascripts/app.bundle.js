@@ -55,6 +55,8 @@
 	var _canvasData = __webpack_require__(6);
 
 	var socket = void 0;
+	var url = window.location.href;
+	var canvasName = url.substring(url.lastIndexOf('/') + 1);
 
 	document.addEventListener('DOMContentLoaded', function () {
 	  initializeSockets();
@@ -66,15 +68,32 @@
 	});
 
 	function initializeSockets() {
+	  //TODO: Send actual canvasData here
 	  socket = io();
-	  socket.emit("new_user", _canvasData.canvasData);
+
+	  socket.emit("new_user", {
+	    name: canvasName,
+	    width: screen.width,
+	    height: screen.height,
+	    strokes: []
+	  });
 
 	  socket.on("canvas_redraw", function (canvas) {
 	    _domNodes.loadingOverlay.classList.add("no-display");
+	    console.log(canvas);
+
+	    //TODO: Write an update function for all strokes
+	    canvas.strokes.forEach(function (data) {
+	      (0, _draw.update)(data.points[0], data.points[1], data.toolAttributes);
+	    });
 	  });
 
 	  socket.on("canvas_update", function (data) {
-	    update(data.points[0], data.points[1], data.toolAttributes);
+	    (0, _draw.update)(data.points[0], data.points[1], data.toolAttributes);
+	  });
+
+	  socket.on("error", function (payload) {
+	    console.log(payload);
 	  });
 	}
 
@@ -91,7 +110,10 @@
 	    var drawData = (0, _draw.mouseMove)(toolPalette.selectedTool, e);
 
 	    if (drawData) {
-	      socket.emit("new_stroke", drawData);
+	      socket.emit("new_stroke", {
+	        drawData: drawData,
+	        canvasName: canvasName
+	      });
 	    }
 	  });
 
@@ -99,7 +121,10 @@
 	    var drawData = (0, _draw.mouseDown)(toolPalette.selectedTool, e);
 
 	    if (drawData) {
-	      socket.emit("new_stroke", drawData);
+	      socket.emit("new_stroke", {
+	        drawData: drawData,
+	        canvasName: canvasName
+	      });
 	    }
 	  });
 
@@ -626,6 +651,7 @@
 	  value: true
 	});
 	exports.mouseOut = exports.mouseUp = exports.mouseMove = exports.mouseDown = undefined;
+	exports.update = update;
 
 	var _domNodes = __webpack_require__(3);
 
@@ -657,7 +683,6 @@
 	      drawing = true;
 	      return {
 	        toolAttributes: selectedTool,
-	        canvasName: _canvasData.canvasData.name,
 	        points: [curPos]
 	      };
 	  }
@@ -684,7 +709,6 @@
 	      stroke(selectedTool);
 	      return {
 	        toolAttributes: selectedTool,
-	        canvasName: _canvasData.canvasData.name,
 	        points: [prevPos, curPos]
 	      };
 	  }
@@ -731,10 +755,10 @@
 	}
 
 	function update(prevPos, curPos, toolAttributes) {
-	  if (prevPos) {
+	  if (!curPos) {
 	    ctx.beginPath();
-	    ctx.fillStyle = selectedTool.color;
-	    ctx.arc(curPos.x, curPos.y, selectedTool.size / 2, 0, 2 * Math.PI);
+	    ctx.fillStyle = toolAttributes.color;
+	    ctx.arc(prevPos.x, prevPos.y, toolAttributes.size / 2, 0, 2 * Math.PI);
 	    ctx.fill();
 	    ctx.closePath();
 	  } else {

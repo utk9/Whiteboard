@@ -89,12 +89,12 @@ router.get('/api/canvas/:name', function(req, res) {
 		if (err) {
 			return next(err);
 		} else if (!canvas) {
-			// res.status(404).json({
-			// 	reason: "This canvas does not exist"
-			// });
-			var notFount = new Error ("Canvas with name " + name + " not found.")
-			notFound.status = 404;
-			return next(notFount);
+			res.status(404).json({
+				reason: "This canvas does not exist"
+			});
+			// var notFount = new Error ("Canvas with name " + name + " not found.")
+			// notFound.status = 404;
+			// return next(notFount);
 		} else {
 			res.json(canvas.canvasInfo);
 		}
@@ -134,8 +134,9 @@ io.on("connection", function (socket) {
   });
 
   socket.on("new_stroke", function (data) {
-    socket.broadcast.to(data.canvasName).emit("canvas_update", data);
-    Canvas.update({name: data.canvasName}, { $push: {'canvasInfo.strokes': data.points}}, function (err){
+    socket.broadcast.to(data.canvasName).emit("canvas_update", data.drawData);
+    Canvas.update({name: data.canvasName}, { $push: {'canvasInfo.strokes': data.drawData}}, function (err){
+    console.log(data);
       if (err) {
         console.log(err);
         //send error to client
@@ -160,9 +161,9 @@ router.get('/:name', function(req, res, next) {
 		} else {
 			//res.status(404).send("Not found");
 			//throw new Error("White board named " + name + " not found.")
-			 var notFount = new Error ("Canvas with name " + name + " not found.")
+			var notFound = new Error ("Canvas with name " + name + " not found.")
 			notFound.status = 404;
-			return next(notFount);
+			return next(notFound);
 			//next();
 		}
 	});

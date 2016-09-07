@@ -99,11 +99,11 @@ function stroke(selectedTool) {
   ctx.closePath()
 }
 
-function update(prevPos, curPos, toolAttributes) {
-  if (curPos) {
+export function update(prevPos, curPos, toolAttributes) {
+  if (!curPos) {
     ctx.beginPath()
-    ctx.fillStyle = selectedTool.color
-    ctx.arc(curPos.x, curPos.y, selectedTool.size/2, 0, 2 * Math.PI)
+    ctx.fillStyle = toolAttributes.color
+    ctx.arc(prevPos.x, prevPos.y, toolAttributes.size/2, 0, 2 * Math.PI)
     ctx.fill()
     ctx.closePath()
   } else {

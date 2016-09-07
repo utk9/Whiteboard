@@ -60,7 +60,10 @@ function addCanvasListeners(toolPalette) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
 
     if (drawData) {
-      socket.emit("new_stroke", Object.assign(drawData, { canvasName }))
+      socket.emit("new_stroke", {
+        drawData,
+        canvasName
+      })
     }
   })
 
@@ -68,7 +71,10 @@ function addCanvasListeners(toolPalette) {
     const drawData = mouseDown(toolPalette.selectedTool, e)
 
     if (drawData) {
-      socket.emit("new_stroke", Object.assign(drawData, { canvasName }))
+      socket.emit("new_stroke", {
+        drawData,
+        canvasName
+      })
     }
   })
 
