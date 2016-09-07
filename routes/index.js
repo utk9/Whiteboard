@@ -21,15 +21,6 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-//NOTE: Depracated
-router.get('/create', function(req, res) {
-	res.render('create');
-});
-//NOTE: Depracated
-router.get('/join', function(req, res) {
-	res.render('join');
-});
-
 //API =========================================================
 router.post('/api/canvas', function (req, res) {
 	var name = req.body.name;
