@@ -97,15 +97,30 @@
 	  });
 	}
 
-	function setCanvasSize() {
-	  _domNodes.canvas.width = _domNodes.board.offsetWidth;
-	  _domNodes.canvas.height = _domNodes.board.offsetHeight;
+	// function setCanvasSize() {
+	//   board.width = screen.width;
+	//   board.height = screen.height;
 
-	  _domNodes.cursorCanvas.width = _domNodes.board.offsetWidth;
-	  _domNodes.cursorCanvas.height = _domNodes.board.offsetHeight;
+	//   canvas.width = board.offsetWidth
+	//   canvas.height = board.offsetHeight
+
+	//   cursorCanvas.width = board.offsetWidth
+	//   cursorCanvas.height = board.offsetHeight
+	// }
+
+	function setCanvasSize() {
+	  // board.width = screen.width;
+	  // board.height = screen.height;
+
+	  _domNodes.canvas.width = screen.width;
+	  _domNodes.canvas.height = screen.height;
+
+	  _domNodes.cursorCanvas.width = screen.width;
+	  _domNodes.cursorCanvas.height = screen.height;
 	}
 
 	function addCanvasListeners(toolPalette) {
+	  debugger;
 	  _domNodes.cursorCanvas.addEventListener('mousemove', function (e) {
 	    var drawData = (0, _draw.mouseMove)(toolPalette.selectedTool, e);
 

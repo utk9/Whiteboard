@@ -47,15 +47,32 @@ function initializeSockets() {
   })
 }
 
-function setCanvasSize() {
-  canvas.width = board.offsetWidth
-  canvas.height = board.offsetHeight
+// function setCanvasSize() {
+//   board.width = screen.width;
+//   board.height = screen.height;
 
-  cursorCanvas.width = board.offsetWidth
-  cursorCanvas.height = board.offsetHeight
+//   canvas.width = board.offsetWidth
+//   canvas.height = board.offsetHeight
+
+//   cursorCanvas.width = board.offsetWidth
+//   cursorCanvas.height = board.offsetHeight
+// }
+
+function setCanvasSize() {
+  // board.width = screen.width;
+  // board.height = screen.height;
+
+  canvas.width = screen.width;
+  canvas.height = screen.height;
+
+  cursorCanvas.width = screen.width;
+  cursorCanvas.height = screen.height;
 }
 
+
+
 function addCanvasListeners(toolPalette) {
+  debugger
   cursorCanvas.addEventListener('mousemove', function(e) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
 
