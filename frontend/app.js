@@ -21,8 +21,7 @@ let socket, loadingInterval
 const url = window.location.href
 const canvasName = url.substring(url.lastIndexOf('/') + 1)
 
-const dots = '...'
-const loadingText = document.querySelector('.loading-text')
+const loadingSpinner = document.querySelector('.loading-spinner')
 
 document.addEventListener('DOMContentLoaded', function() {
   animateLoading(0)
@@ -126,7 +125,7 @@ function addCanvasListeners(toolPalette) {
 
 function animateLoading(n) {
   loadingInterval = setTimeout(function() {
-    loadingText.innerHTML = `Loading${dots.substring(0, n % 4)}`
-    animateLoading(n + 1)
-  }, 250)
+    loadingSpinner.setAttribute('style', `transform: rotate(${n % 360}deg)`)
+    animateLoading(n + 5)
+  }, 18)
 }
