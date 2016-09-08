@@ -1,6 +1,19 @@
 import { ToolPalette } from './toolPalette'
-import { canvas, cursorCanvas, loadingOverlay, board } from './domNodes'
-import { mouseMove, mouseDown, mouseUp, mouseOut, update } from './draw'
+import {
+  canvas,
+  cursorCanvas,
+  overlay,
+  board,
+  loadingIcon,
+  passModal
+} from './domNodes'
+import {
+  mouseMove,
+  mouseDown,
+  mouseUp,
+  mouseOut,
+  update
+} from './draw'
 import { canvasData } from './canvasData'
 
 let socket
@@ -21,16 +34,18 @@ function initializeSockets() {
   //TODO: Send actual canvasData here
   socket = io()
 
-  socket.emit("new_user", {
+  const canvasData = {
     name: canvasName,
     width: screen.width,
     height: screen.height,
     strokes: [],
-  })
+  }
 
-  socket.on("canvas_redraw", function(canvas) {
-    loadingOverlay.classList.add("no-display")
-    console.log(canvas)
+  socket.emit('new_user', {name: canvasName})
+
+  socket.on('canvas_redraw', function(canvas) {
+    passModal.classList.remove('show')
+    overlay.classList.add('no-display')
 
     //TODO: Write an update function for all strokes
     canvas.strokes.forEach(function(data) {
@@ -38,12 +53,28 @@ function initializeSockets() {
     })
   })
 
-  socket.on("canvas_update", function(data) {
+  socket.on('canvas_update', function(data) {
     update(data.points[0], data.points[1], data.toolAttributes)
   })
 
-  socket.on("error", function(payload) {
+  socket.on('error', function(payload) {
     console.log(payload)
+  })
+
+  socket.on('password_required', function() {
+    loadingIcon.classList.add('no-display')
+    passModal.classList.add('show')
+
+    const submitButton = document.querySelector('#password-submit')
+    const passInput = document.querySelector('#password-input')
+    submitButton.addEventListener('click', function() {
+      socket.emit('new_user', { name: canvasName, pass: passInput.value })
+    })
+  })
+
+  socket.on('incorrect_password', function() {
+    const errorSpan = document.querySelector('.error')
+    errorSpan.innerHTML = 'Incorrect password. Please try again.'
   })
 }
 
@@ -60,7 +91,7 @@ function addCanvasListeners(toolPalette) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
 
     if (drawData) {
-      socket.emit("new_stroke", {
+      socket.emit('new_stroke', {
         drawData,
         canvasName
       })
@@ -71,7 +102,7 @@ function addCanvasListeners(toolPalette) {
     const drawData = mouseDown(toolPalette.selectedTool, e)
 
     if (drawData) {
-      socket.emit("new_stroke", {
+      socket.emit('new_stroke', {
         drawData,
         canvasName
       })

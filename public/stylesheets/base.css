@@ -1,0 +1,29 @@
+html, body {
+  font-family: sans-serif;
+  height: 100%;
+  color: #111;
+}
+
+button.btn {
+  font-size: 18px;
+  border: none;
+  transition: color 250ms, box-shadow 300ms;
+  box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
+  color: white;
+  background-color: #111;
+}
+
+button.btn:hover, button.btn.selected {
+  color: #6ed4ff;
+  cursor: pointer;
+  box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.3);
+}
+
+button:focus {
+  outline: none;
+}
+
+input {
+  text-align: center;
+  border-radius: 5px;
+}

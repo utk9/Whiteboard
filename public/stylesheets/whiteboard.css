@@ -168,7 +168,7 @@
   left: 90px;
 }
 
-.loading-overlay {
+.overlay {
   background-color: rgba(0, 0, 0, 0.3);
   position: absolute;
   top: 0;
@@ -183,8 +183,58 @@
   position: absolute;
   top: 50%;
   left: 50%;
+  transform: translateX(-50%);
 }
 
 .loading-icon h3 {
   color: white;
+}
+
+.password-modal {
+  width: 400px;
+  background-color: white;
+  position: absolute;
+  top: -320px;
+  left: 50%;
+  opacity: 0;
+  transform: translateX(-50%);
+  border-radius: 10px;
+  padding: 30px;
+  box-shadow: 20px 20px 30px rgba(0, 0, 0, 0.3);
+  transition: top 700ms, opacity 700ms;
+}
+
+.password-modal.show {
+  top: 100px;
+  opacity: 1;
+}
+
+.password-modal input {
+  width: 300px;
+  height: 40px;
+  font-size: 15px;
+  margin: 10px;
+}
+
+.password-modal input:focus {
+  outline: none;
+}
+
+.password-modal .lock-img {
+  width: 80px;
+}
+
+.password-modal .modal-title {
+  margin: 10px;
+}
+
+.password-modal .error {
+  margin: 10px;
+}
+
+button.btn {
+  width: 100px;
+  height: 40px;
+  border-radius: 10px;
+  margin-top: 5px;
 }

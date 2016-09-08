@@ -116,7 +116,7 @@ io.on("connection", function (socket) {
         if (canvas.pass) {
           if (canvasData.pass) {
             if (canvasData.pass == canvas.pass) {
-              socket.join(canvasData.canvasInfo.name);
+              socket.join(canvasData.name);
               socket.emit("canvas_redraw", canvas.canvasInfo);
             } else {
               socket.emit("incorrect_password");
