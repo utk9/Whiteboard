@@ -20,7 +20,6 @@ class Tool {
   }
 
   toggle() {
-    console.log('toggling:', this.name)
     const elToDisplay = getToolElement(this.name, false)
 
     this.el.classList.remove('display')

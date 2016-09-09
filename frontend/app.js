@@ -109,7 +109,6 @@ function setCanvasSize() {
 
 
 function addCanvasListeners(toolPalette) {
-  debugger
   cursorCanvas.addEventListener('mousemove', function(e) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
     emitNewStroke(drawData)
