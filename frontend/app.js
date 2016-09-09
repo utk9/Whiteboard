@@ -52,14 +52,15 @@ function initializeSockets() {
     passModal.classList.remove('show')
     overlay.classList.add('no-display')
 
+    console.log(canvas)
     //TODO: Write an update function for all strokes
     canvas.strokes.forEach(function(data) {
-      update(data.points[0], data.points[1], data.toolAttributes)
+      update(data)
     })
   })
 
   socket.on('canvas_update', function(data) {
-    update(data.points[0], data.points[1], data.toolAttributes)
+    update(data)
   })
 
   socket.on('error', function(payload) {
@@ -94,37 +95,31 @@ function setCanvasSize() {
 function addCanvasListeners(toolPalette) {
   cursorCanvas.addEventListener('mousemove', function(e) {
     const drawData = mouseMove(toolPalette.selectedTool, e)
-
-    if (drawData) {
-      socket.emit('new_stroke', {
-        drawData,
-        canvasName
-      })
-    }
+    emitNewStroke(drawData)
   })
 
   cursorCanvas.addEventListener('mousedown', function(e) {
     const drawData = mouseDown(toolPalette.selectedTool, e)
-
-    if (drawData) {
-      socket.emit('new_stroke', {
-        drawData,
-        canvasName
-      })
-    }
+    emitNewStroke(drawData)
   })
 
   cursorCanvas.addEventListener('mouseup', function(e) {
     const drawData = mouseUp(toolPalette.selectedTool, e)
-
-    if (drawData) {
-      socket.emit("new_shape", drawData)
-    }
+    emitNewStroke(drawData)
   })
 
   cursorCanvas.addEventListener('mouseout', function(e) {
     mouseOut(e)
   })
+}
+
+function emitNewStroke(drawData) {
+  if (drawData) {
+    socket.emit('new_stroke', {
+      drawData,
+      canvasName
+    })
+  }
 }
 
 function animateLoading(n) {

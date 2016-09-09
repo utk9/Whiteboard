@@ -122,7 +122,6 @@ export const mouseUp = function(selectedTool, e) {
 
       return {
         toolAttributes: selectedTool,
-        canvasName: canvasData.name,
         shape,
       }
 
@@ -139,7 +138,6 @@ export const mouseUp = function(selectedTool, e) {
 
       return {
         toolAttributes: selectedTool,
-        canvasName: canvasData.name,
         shape,
       }
     default:
@@ -183,24 +181,65 @@ function stroke(selectedTool) {
   ctx.closePath()
 }
 
-export function update(prevPos, curPos, toolAttributes) {
-  if (!curPos) {
-    ctx.beginPath()
-    ctx.fillStyle = toolAttributes.color
-    ctx.arc(prevPos.x, prevPos.y, toolAttributes.size/2, 0, 2 * Math.PI)
-    ctx.fill()
-    ctx.closePath()
-  } else {
-    ctx.beginPath()
+export function update(data) {
 
-    ctx.lineWidth = toolAttributes.size
-    ctx.strokeStyle = toolAttributes.color
+  const toolAttributes = data.toolAttributes
+  const points = data.points
 
-    ctx.lineJoin = ctx.lineCap = 'round'
-    ctx.moveTo(prevPos.x, prevPos.y)
-    ctx.lineTo(curPos.x, curPos.y)
+  let prevPos, curPos
+  if (points) {
+    prevPos = data.points[0]
+    curPos = data.points[1]
+  }
 
-    ctx.stroke()
-    ctx.closePath()
+  const name = toolAttributes.name
+  const shape = toolAttributes.shape
+
+  switch (name) {
+    case 'marker':
+    case 'eraser':
+      if (!curPos) {
+        ctx.beginPath()
+        ctx.fillStyle = toolAttributes.color
+        ctx.arc(prevPos.x, prevPos.y, toolAttributes.size/2, 0, 2 * Math.PI)
+        ctx.fill()
+        ctx.closePath()
+      } else {
+        ctx.beginPath()
+
+        ctx.lineWidth = toolAttributes.size
+        ctx.strokeStyle = toolAttributes.color
+
+        ctx.lineJoin = ctx.lineCap = 'round'
+        ctx.moveTo(prevPos.x, prevPos.y)
+        ctx.lineTo(curPos.x, curPos.y)
+
+        ctx.stroke()
+        ctx.closePath()
+      }
+      return
+
+    case 'circle':
+      ctx.beginPath()
+      ctx.lineWidth = 2
+      ctx.strokeStyle = colorMap['black']
+
+      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI)
+      ctx.stroke()
+      ctx.closePath()
+      return
+
+    case 'rectangle':
+      ctx.beginPath()
+      ctx.lineWidth = 2
+      ctx.strokeStyle = colorMap['black']
+
+      ctx.rect(shape.x, shape.y, shape.width, shape.height)
+      ctx.stroke()
+      ctx.closePath()
+      return
+
+    default:
+      return
   }
 }
