@@ -16,6 +16,8 @@ export const paletteMap = {
   splatter: {
     marker: 'colorPalette',
     eraser: 'colorPalette',
+    circle: 'colorPalette',
+    rectangle: 'colorPalette',
   },
   dots: {
     marker: 'markerSizePalette',

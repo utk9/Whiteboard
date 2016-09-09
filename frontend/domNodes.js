@@ -7,7 +7,9 @@ export const toolList = document.querySelector('.tool-palette')
 export const canvas = document.getElementById('canvas-main')
 export const cursorCanvas = document.getElementById('canvas-cursor')
 export const board = document.querySelector('.board')
-export const loadingOverlay = document.querySelector('.loading-overlay')
+export const overlay = document.querySelector('.overlay')
+export const loadingIcon = document.querySelector('.loading-icon')
+export const passModal = document.querySelector('.password-modal')
 
 // TODO: Memoize the values
 export const getPaletteElement = function (name) {

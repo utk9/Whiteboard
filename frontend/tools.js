@@ -100,6 +100,39 @@ export class Eraser extends Stroker {
   }
 }
 
+export class Circle extends Tool {
+  constructor() {
+    super('circle', getToolElement('circle'))
+    this.shape = null
+    this.setShape = this.setShape.bind(this)
+  }
+
+  setShape(x, y, radius) {
+    this.shape = {
+      x,
+      y,
+      radius,
+    }
+  }
+}
+
+export class Rectangle extends Tool {
+  constructor() {
+    super('rectangle', getToolElement('rectangle'))
+    this.shape = null
+    this.setShape = this.setShape.bind(this)
+  }
+
+  setShape(x, y, width, height) {
+    this.shape = {
+      x,
+      y,
+      width,
+      height,
+    }
+  }
+}
+
 class PaletteTool extends Tool {
   constructor(name) {
     const el = getToolElement(name)
