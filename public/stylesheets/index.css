@@ -1,3 +1,8 @@
+body {
+  background-image: url("../assets/pencils.jpg");
+  background-size: cover;
+}
+
 .jumbotron {
   margin: 0;
   height: 100%;
@@ -38,7 +43,7 @@ button.action-btn {
 .blue-box {
   position: relative;
   margin: 40px auto;
-  background-color: #6ed4ff;
+  background-color: #35a989;
   width: 800px;
   padding: 25px 0px;
   box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.2);
@@ -76,7 +81,7 @@ img.lock-img {
   position: absolute;
   width: 40px;
   height: 40px;
-  background-color: #6ed4ff;
+  background-color: #35a989;
   transform: rotate(45deg);
   border-radius: 5px;
 }
