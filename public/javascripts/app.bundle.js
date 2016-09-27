@@ -54,11 +54,17 @@
 
 	var _canvasData = __webpack_require__(6);
 
-	var socket = void 0;
+	var socket = void 0,
+	    loadingInterval = void 0;
+
 	var url = window.location.href;
 	var canvasName = url.substring(url.lastIndexOf('/') + 1);
 
+	var loadingSpinner = document.querySelector('.loading-spinner');
+
 	document.addEventListener('DOMContentLoaded', function () {
+	  animateLoading(0);
+
 	  initializeSockets();
 
 	  var toolPalette = new _toolPalette.ToolPalette();
@@ -71,29 +77,48 @@
 	  //TODO: Send actual canvasData here
 	  socket = io();
 
-	  socket.emit("new_user", {
+	  var canvasData = {
 	    name: canvasName,
 	    width: screen.width,
 	    height: screen.height,
 	    strokes: []
-	  });
+	  };
 
-	  socket.on("canvas_redraw", function (canvas) {
-	    _domNodes.loadingOverlay.classList.add("no-display");
+	  socket.emit('new_user', { name: canvasName });
+
+	  socket.on('canvas_redraw', function (canvas) {
+	    _domNodes.passModal.classList.remove('show');
+	    _domNodes.overlay.classList.add('no-display');
+
 	    console.log(canvas);
-
 	    //TODO: Write an update function for all strokes
 	    canvas.strokes.forEach(function (data) {
-	      (0, _draw.update)(data.points[0], data.points[1], data.toolAttributes);
+	      (0, _draw.update)(data);
 	    });
 	  });
 
-	  socket.on("canvas_update", function (data) {
-	    (0, _draw.update)(data.points[0], data.points[1], data.toolAttributes);
+	  socket.on('canvas_update', function (data) {
+	    (0, _draw.update)(data);
 	  });
 
-	  socket.on("error", function (payload) {
+	  socket.on('error', function (payload) {
 	    console.log(payload);
+	  });
+
+	  socket.on('password_required', function () {
+	    _domNodes.loadingIcon.classList.add('no-display');
+	    _domNodes.passModal.classList.add('show');
+
+	    var submitButton = document.querySelector('#password-submit');
+	    var passInput = document.querySelector('#password-input');
+	    submitButton.addEventListener('click', function () {
+	      socket.emit('new_user', { name: canvasName, pass: passInput.value });
+	    });
+	  });
+
+	  socket.on('incorrect_password', function () {
+	    var errorSpan = document.querySelector('.error');
+	    errorSpan.innerHTML = 'Incorrect password. Please try again.';
 	  });
 	}
 
@@ -120,36 +145,40 @@
 	}
 
 	function addCanvasListeners(toolPalette) {
-	  debugger;
 	  _domNodes.cursorCanvas.addEventListener('mousemove', function (e) {
 	    var drawData = (0, _draw.mouseMove)(toolPalette.selectedTool, e);
-
-	    if (drawData) {
-	      socket.emit("new_stroke", {
-	        drawData: drawData,
-	        canvasName: canvasName
-	      });
-	    }
+	    emitNewStroke(drawData);
 	  });
 
 	  _domNodes.cursorCanvas.addEventListener('mousedown', function (e) {
 	    var drawData = (0, _draw.mouseDown)(toolPalette.selectedTool, e);
-
-	    if (drawData) {
-	      socket.emit("new_stroke", {
-	        drawData: drawData,
-	        canvasName: canvasName
-	      });
-	    }
+	    emitNewStroke(drawData);
 	  });
 
 	  _domNodes.cursorCanvas.addEventListener('mouseup', function (e) {
-	    (0, _draw.mouseUp)(e);
+	    var drawData = (0, _draw.mouseUp)(toolPalette.selectedTool, e);
+	    emitNewStroke(drawData);
 	  });
 
 	  _domNodes.cursorCanvas.addEventListener('mouseout', function (e) {
 	    (0, _draw.mouseOut)(e);
 	  });
+	}
+
+	function emitNewStroke(drawData) {
+	  if (drawData) {
+	    socket.emit('new_stroke', {
+	      drawData: drawData,
+	      canvasName: canvasName
+	    });
+	  }
+	}
+
+	function animateLoading(n) {
+	  loadingInterval = setTimeout(function () {
+	    loadingSpinner.setAttribute('style', 'transform: rotate(' + n % 360 + 'deg)');
+	    animateLoading(n + 5);
+	  }, 18);
 	}
 
 /***/ },
@@ -207,11 +236,15 @@
 	      var dots = new _tools.Dots();
 	      var marker = new _tools.Marker('gray', 6, splatter);
 	      var eraser = new _tools.Eraser(6);
+	      var circle = new _tools.Circle();
+	      var rectangle = new _tools.Rectangle();
 
 	      this.tools = {
 	        splatter: splatter,
 	        marker: marker,
-	        eraser: eraser
+	        eraser: eraser,
+	        circle: circle,
+	        rectangle: rectangle
 	      };
 
 	      // Add all palettes
@@ -345,7 +378,9 @@
 	var paletteMap = exports.paletteMap = {
 	  splatter: {
 	    marker: 'colorPalette',
-	    eraser: 'colorPalette'
+	    eraser: 'colorPalette',
+	    circle: 'colorPalette',
+	    rectangle: 'colorPalette'
 	  },
 	  dots: {
 	    marker: 'markerSizePalette',
@@ -365,7 +400,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.loadingOverlay = exports.board = exports.cursorCanvas = exports.canvas = exports.toolList = undefined;
+	exports.getToolElement = exports.getColorElement = exports.getSizeElement = exports.getPaletteElement = exports.passModal = exports.loadingIcon = exports.overlay = exports.board = exports.cursorCanvas = exports.canvas = exports.toolList = undefined;
 
 	var _maps = __webpack_require__(2);
 
@@ -373,7 +408,9 @@
 	var canvas = exports.canvas = document.getElementById('canvas-main');
 	var cursorCanvas = exports.cursorCanvas = document.getElementById('canvas-cursor');
 	var board = exports.board = document.querySelector('.board');
-	var loadingOverlay = exports.loadingOverlay = document.querySelector('.loading-overlay');
+	var overlay = exports.overlay = document.querySelector('.overlay');
+	var loadingIcon = exports.loadingIcon = document.querySelector('.loading-icon');
+	var passModal = exports.passModal = document.querySelector('.password-modal');
 
 	// TODO: Memoize the values
 	var getPaletteElement = exports.getPaletteElement = function getPaletteElement(name) {
@@ -413,7 +450,7 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.Palette = exports.Dots = exports.Splatter = exports.Eraser = exports.Marker = undefined;
+	exports.Palette = exports.Dots = exports.Splatter = exports.Rectangle = exports.Circle = exports.Eraser = exports.Marker = undefined;
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
@@ -442,7 +479,6 @@
 	  _createClass(Tool, [{
 	    key: 'toggle',
 	    value: function toggle() {
-	      console.log('toggling:', this.name);
 	      var elToDisplay = (0, _domNodes.getToolElement)(this.name, false);
 
 	      this.el.classList.remove('display');
@@ -558,18 +594,73 @@
 	  return Eraser;
 	}(Stroker);
 
-	var PaletteTool = function (_Tool2) {
-	  _inherits(PaletteTool, _Tool2);
+	var Circle = exports.Circle = function (_Tool2) {
+	  _inherits(Circle, _Tool2);
+
+	  function Circle() {
+	    _classCallCheck(this, Circle);
+
+	    var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(Circle).call(this, 'circle', (0, _domNodes.getToolElement)('circle')));
+
+	    _this4.shape = null;
+	    _this4.setShape = _this4.setShape.bind(_this4);
+	    return _this4;
+	  }
+
+	  _createClass(Circle, [{
+	    key: 'setShape',
+	    value: function setShape(x, y, radius) {
+	      this.shape = {
+	        x: x,
+	        y: y,
+	        radius: radius
+	      };
+	    }
+	  }]);
+
+	  return Circle;
+	}(Tool);
+
+	var Rectangle = exports.Rectangle = function (_Tool3) {
+	  _inherits(Rectangle, _Tool3);
+
+	  function Rectangle() {
+	    _classCallCheck(this, Rectangle);
+
+	    var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(Rectangle).call(this, 'rectangle', (0, _domNodes.getToolElement)('rectangle')));
+
+	    _this5.shape = null;
+	    _this5.setShape = _this5.setShape.bind(_this5);
+	    return _this5;
+	  }
+
+	  _createClass(Rectangle, [{
+	    key: 'setShape',
+	    value: function setShape(x, y, width, height) {
+	      this.shape = {
+	        x: x,
+	        y: y,
+	        width: width,
+	        height: height
+	      };
+	    }
+	  }]);
+
+	  return Rectangle;
+	}(Tool);
+
+	var PaletteTool = function (_Tool4) {
+	  _inherits(PaletteTool, _Tool4);
 
 	  function PaletteTool(name) {
 	    _classCallCheck(this, PaletteTool);
 
 	    var el = (0, _domNodes.getToolElement)(name);
 
-	    var _this4 = _possibleConstructorReturn(this, Object.getPrototypeOf(PaletteTool).call(this, name, el));
+	    var _this6 = _possibleConstructorReturn(this, Object.getPrototypeOf(PaletteTool).call(this, name, el));
 
-	    _this4.addPalette = _this4.addPalette.bind(_this4);
-	    return _this4;
+	    _this6.addPalette = _this6.addPalette.bind(_this6);
+	    return _this6;
 	  }
 
 	  _createClass(PaletteTool, [{
@@ -588,10 +679,10 @@
 	  function Splatter() {
 	    _classCallCheck(this, Splatter);
 
-	    var _this5 = _possibleConstructorReturn(this, Object.getPrototypeOf(Splatter).call(this, 'splatter'));
+	    var _this7 = _possibleConstructorReturn(this, Object.getPrototypeOf(Splatter).call(this, 'splatter'));
 
-	    _this5.setBackgroundColor = _this5.setBackgroundColor.bind(_this5);
-	    return _this5;
+	    _this7.setBackgroundColor = _this7.setBackgroundColor.bind(_this7);
+	    return _this7;
 	  }
 
 	  _createClass(Splatter, [{
@@ -640,13 +731,13 @@
 	  }, {
 	    key: 'addListeners',
 	    value: function addListeners(selectChild, setPalette) {
-	      var _this7 = this;
+	      var _this9 = this;
 
 	      var children = Array.prototype.slice.call(this.el.children);
 	      children.forEach(function (child) {
 	        child.addEventListener('click', function (e) {
 	          selectChild(child);
-	          _this7.toggle();
+	          _this9.toggle();
 	          setPalette(null);
 	        });
 	      });
@@ -672,6 +763,8 @@
 
 	var _canvasData = __webpack_require__(6);
 
+	var _maps = __webpack_require__(2);
+
 	var ctx = _domNodes.canvas.getContext('2d');
 	var cursorCtx = _domNodes.cursorCanvas.getContext('2d');
 
@@ -682,6 +775,7 @@
 	var mouseDown = exports.mouseDown = function mouseDown(selectedTool, e) {
 
 	  setCurrentPos(e);
+	  drawing = true;
 
 	  var name = selectedTool.name;
 
@@ -695,11 +789,12 @@
 	      ctx.fill();
 	      ctx.closePath();
 
-	      drawing = true;
 	      return {
 	        toolAttributes: selectedTool,
 	        points: [curPos]
 	      };
+	    default:
+	      return;
 	  }
 	};
 
@@ -726,11 +821,90 @@
 	        toolAttributes: selectedTool,
 	        points: [prevPos, curPos]
 	      };
+
+	    case 'circle':
+	      if (!drawing) return;
+
+	      var sideX = Math.abs(getCurPos(e).x - curPos.x);
+	      var sideY = Math.abs(getCurPos(e).y - curPos.y);
+	      var minSideLength = Math.min(sideX, sideY);
+
+	      var centerX = curPos.x + minSideLength / 2;
+	      var centerY = curPos.y + minSideLength / 2;
+	      var radius = minSideLength / 2;
+
+	      cursorCtx.clearRect(0, 0, _domNodes.cursorCanvas.width, _domNodes.cursorCanvas.height);
+	      cursorCtx.beginPath();
+	      cursorCtx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+	      cursorCtx.stroke();
+	      cursorCtx.closePath();
+
+	      selectedTool.setShape(centerX, centerY, radius);
+	      return;
+
+	    case 'rectangle':
+	      if (!drawing) return;
+
+	      var width = getCurPos(e).x - curPos.x;
+	      var height = getCurPos(e).y - curPos.y;
+
+	      cursorCtx.clearRect(0, 0, _domNodes.cursorCanvas.width, _domNodes.cursorCanvas.height);
+
+	      cursorCtx.beginPath();
+	      cursorCtx.rect(curPos.x, curPos.y, width, height);
+	      cursorCtx.stroke();
+	      cursorCtx.closePath();
+
+	      selectedTool.setShape(curPos.x, curPos.y, width, height);
+	      return;
+
+	    default:
+	      return;
 	  }
 	};
 
-	var mouseUp = exports.mouseUp = function mouseUp(e) {
+	var mouseUp = exports.mouseUp = function mouseUp(selectedTool, e) {
+	  if (!drawing) return;
 	  drawing = false;
+
+	  var name = selectedTool.name;
+	  var shape = selectedTool.shape;
+
+	  switch (name) {
+	    case 'circle':
+	      cursorCtx.clearRect(0, 0, _domNodes.cursorCanvas.width, _domNodes.cursorCanvas.height);
+
+	      ctx.beginPath();
+	      ctx.lineWidth = 2;
+	      ctx.strokeStyle = _maps.colorMap['black'];
+
+	      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+	      ctx.stroke();
+	      ctx.closePath();
+
+	      return {
+	        toolAttributes: selectedTool,
+	        shape: shape
+	      };
+
+	    case 'rectangle':
+	      cursorCtx.clearRect(0, 0, _domNodes.cursorCanvas.width, _domNodes.cursorCanvas.height);
+
+	      ctx.beginPath();
+	      ctx.lineWidth = 2;
+	      ctx.strokeStyle = _maps.colorMap['black'];
+
+	      ctx.rect(shape.x, shape.y, shape.width, shape.height);
+	      ctx.stroke();
+	      ctx.closePath();
+
+	      return {
+	        toolAttributes: selectedTool,
+	        shape: shape
+	      };
+	    default:
+	      return;
+	  }
 	};
 
 	var mouseOut = exports.mouseOut = function mouseOut(e) {
@@ -769,25 +943,67 @@
 	  ctx.closePath();
 	}
 
-	function update(prevPos, curPos, toolAttributes) {
-	  if (!curPos) {
-	    ctx.beginPath();
-	    ctx.fillStyle = toolAttributes.color;
-	    ctx.arc(prevPos.x, prevPos.y, toolAttributes.size / 2, 0, 2 * Math.PI);
-	    ctx.fill();
-	    ctx.closePath();
-	  } else {
-	    ctx.beginPath();
+	function update(data) {
 
-	    ctx.lineWidth = toolAttributes.size;
-	    ctx.strokeStyle = toolAttributes.color;
+	  var toolAttributes = data.toolAttributes;
+	  var points = data.points;
 
-	    ctx.lineJoin = ctx.lineCap = 'round';
-	    ctx.moveTo(prevPos.x, prevPos.y);
-	    ctx.lineTo(curPos.x, curPos.y);
+	  var prevPos = void 0,
+	      curPos = void 0;
+	  if (points) {
+	    prevPos = data.points[0];
+	    curPos = data.points[1];
+	  }
 
-	    ctx.stroke();
-	    ctx.closePath();
+	  var name = toolAttributes.name;
+	  var shape = toolAttributes.shape;
+
+	  switch (name) {
+	    case 'marker':
+	    case 'eraser':
+	      if (!curPos) {
+	        ctx.beginPath();
+	        ctx.fillStyle = toolAttributes.color;
+	        ctx.arc(prevPos.x, prevPos.y, toolAttributes.size / 2, 0, 2 * Math.PI);
+	        ctx.fill();
+	        ctx.closePath();
+	      } else {
+	        ctx.beginPath();
+
+	        ctx.lineWidth = toolAttributes.size;
+	        ctx.strokeStyle = toolAttributes.color;
+
+	        ctx.lineJoin = ctx.lineCap = 'round';
+	        ctx.moveTo(prevPos.x, prevPos.y);
+	        ctx.lineTo(curPos.x, curPos.y);
+
+	        ctx.stroke();
+	        ctx.closePath();
+	      }
+	      return;
+
+	    case 'circle':
+	      ctx.beginPath();
+	      ctx.lineWidth = 2;
+	      ctx.strokeStyle = _maps.colorMap['black'];
+
+	      ctx.arc(shape.x, shape.y, shape.radius, 0, 2 * Math.PI);
+	      ctx.stroke();
+	      ctx.closePath();
+	      return;
+
+	    case 'rectangle':
+	      ctx.beginPath();
+	      ctx.lineWidth = 2;
+	      ctx.strokeStyle = _maps.colorMap['black'];
+
+	      ctx.rect(shape.x, shape.y, shape.width, shape.height);
+	      ctx.stroke();
+	      ctx.closePath();
+	      return;
+
+	    default:
+	      return;
 	  }
 	}
 
