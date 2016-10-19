@@ -5,6 +5,7 @@ var router = express.Router();
 var Canvas = require('../models/Canvas.js');
 
 //initiate mongoose connection
+//mongoose.connect('mongodb://localhost/Whiteboard');
 mongoose.connect(process.env.MONGODB_URI);
 
 var db = mongoose.connection;
