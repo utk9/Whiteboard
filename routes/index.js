@@ -95,7 +95,6 @@ router.get('/api/canvas/:name', function(req, res) {
 //IO =========================================================
 io.on("connection", function (socket) {
   socket.on("new_user", function (canvasData) {
-  	console.log(canvasData);
     Canvas.findOne({'name': canvasData.name}, function (err, canvas){
       if (err) {
         console.log(err);
@@ -127,7 +126,6 @@ io.on("connection", function (socket) {
   socket.on("new_stroke", function (data) {
     socket.broadcast.to(data.canvasName).emit("canvas_update", data.drawData);
     Canvas.update({name: data.canvasName}, { $push: {'canvasInfo.strokes': data.drawData}}, function (err){
-    console.log(data);
       if (err) {
         console.log(err);
         //send error to client
